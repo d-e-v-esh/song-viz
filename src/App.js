@@ -1,12 +1,12 @@
 import React from "react";
-import ReactPlayer from "react-player";
 import melon from "./water.mp3";
 import Container from "./components/Container";
-
+import FunctionCont from "./components/functionCont";
 function App() {
   return (
     <div>
-      <Container />
+      <FunctionCont />
+      {/* <Container /> */}
     </div>
   );
 }

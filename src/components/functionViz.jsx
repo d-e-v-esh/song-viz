@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import Paper from "@material-ui/core/Paper";
 import IconButton from "@material-ui/core/IconButton";
 import Tooltip from "@material-ui/core/Tooltip";
@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function VisualDemo(props) {
+const VisualDemo = (props) => {
   const classes = useStyles();
 
   const amplitudeValues = useRef(null);
@@ -39,7 +39,6 @@ export default function VisualDemo(props) {
     requestAnimationFrame(runSpectrum);
   }
 
-  console.log(props.audioData);
   function handleStartButtonClick() {
     props.initializeAudioAnalyser();
     requestAnimationFrame(runSpectrum);
@@ -71,4 +70,5 @@ export default function VisualDemo(props) {
       </div>
     </div>
   );
-}
+};
+export default VisualDemo;

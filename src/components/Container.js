@@ -1,7 +1,6 @@
 import React from "react";
 import VisualDemo from "./VisualDemo";
-import soundFile from "../audio/GummyBearz.mp3";
-import { Container } from "@material-ui/core";
+import soundFile from "../audio/water.mp3";
 
 class ContainerMain extends React.Component {
   constructor(props) {
@@ -16,7 +15,10 @@ class ContainerMain extends React.Component {
     const source = audioContext.createMediaElementSource(audioFile);
     const analyser = audioContext.createAnalyser();
     audioFile.src = soundFile;
+    // fftSize is how many different frequencies you want to control
+    //  A higher value will result in more details in the frequency domain but fewer details in the time domain.
     analyser.fftSize = 64;
+
     source.connect(audioContext.destination);
     source.connect(analyser);
     audioFile.play();
