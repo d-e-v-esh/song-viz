@@ -51,11 +51,7 @@ const VisualDemo = ({ toggleAudio, frequencyBandArray, getFrequencyData }) => {
     <div>
       <div>
         <Tooltip title="Start" aria-label="Start" placement="right">
-          <IconButton
-            id="startButton"
-            onClick={handleStartButtonClick}
-            // disabled={!!props.audioData ? true : false}
-          >
+          <IconButton id="startButton" onClick={handleStartButtonClick}>
             <EqualizerIcon />
           </IconButton>
         </Tooltip>
