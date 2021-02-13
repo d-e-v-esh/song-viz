@@ -5,40 +5,49 @@ import soundFile from "../audio/water.mp3";
 
 const FunctionCont = () => {
   const [audioData, setAudioData] = useState();
-  let frequencyBandArray = [...Array(25).keys()];
+  const audioFile = React.useRef(new Audio());
+  const frequencyBandArray = [...Array(25).keys()];
 
-  useEffect(() => {
-    initializeAudioAnalyser();
-  }, []);
-
-  const audioFile = new Audio();
-  useEffect(() => {
-    audioFile.play();
-  }, []);
-  const initializeAudioAnalyser = () => {
+  const initializeAudioAnalyser = React.useCallback(() => {
     const audioContext = new AudioContext();
-    const source = audioContext.createMediaElementSource(audioFile);
+    audioFile.current.src = soundFile;
+    audioFile.current.crossOrigin = "anonymous";
+    const source = audioContext.createMediaElementSource(audioFile.current);
     const analyser = audioContext.createAnalyser();
-    audioFile.src = soundFile;
-
     analyser.fftSize = 64;
 
     source.connect(audioContext.destination);
     source.connect(analyser);
 
+    console.log(analyser);
+
     setAudioData(analyser);
-  };
-  const getFrequencyData = (styleAdjuster) => {
-    const bufferLength = audioData.frequencyBinCount;
-    const amplitudeArray = new Uint8Array(bufferLength);
-    audioData.getByteFrequencyData(amplitudeArray);
-    styleAdjuster(amplitudeArray);
-  };
+  }, [audioFile, setAudioData]);
+
+  useEffect(initializeAudioAnalyser, [initializeAudioAnalyser]);
+
+  const getFrequencyData = React.useCallback(
+    (styleAdjuster) => {
+      const bufferLength = audioData.frequencyBinCount;
+      const amplitudeArray = new Uint8Array(bufferLength);
+      audioData.getByteFrequencyData(amplitudeArray);
+      styleAdjuster(amplitudeArray);
+    },
+    [audioData]
+  );
+
+  const toggleAudio = React.useCallback(() => {
+    if (audioFile.current.paused) {
+      audioFile.current.play();
+    } else {
+      audioFile.current.pause();
+    }
+  }, [audioFile]);
 
   return (
     <div>
       <VisualDemo
-        initializeAudioAnalyser={initializeAudioAnalyser}
+        toggleAudio={toggleAudio}
         frequencyBandArray={frequencyBandArray}
         getFrequencyData={getFrequencyData}
         // audioData={audioData}

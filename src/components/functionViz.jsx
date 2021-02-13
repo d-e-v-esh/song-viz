@@ -15,34 +15,37 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const VisualDemo = (props) => {
+const VisualDemo = ({ toggleAudio, frequencyBandArray, getFrequencyData }) => {
   const classes = useStyles();
 
   const amplitudeValues = useRef(null);
 
-  function adjustFreqBandStyle(newAmplitudeData) {
-    amplitudeValues.current = newAmplitudeData;
-    let domElements = props.frequencyBandArray.map((num) =>
-      document.getElementById(num)
-    );
-    for (let i = 0; i < props.frequencyBandArray.length; i++) {
-      let num = props.frequencyBandArray[i];
-      domElements[
-        num
-      ].style.backgroundColor = `rgb(0, 255, ${amplitudeValues.current[num]})`;
-      domElements[num].style.height = `${amplitudeValues.current[num]}px`;
-    }
-  }
+  const adjustFreqBandStyle = React.useCallback(
+    (newAmplitudeData) => {
+      amplitudeValues.current = newAmplitudeData;
+      let domElements = frequencyBandArray.map((num) =>
+        document.getElementById(num)
+      );
+      for (let i = 0; i < frequencyBandArray.length; i++) {
+        let num = frequencyBandArray[i];
+        domElements[
+          num
+        ].style.backgroundColor = `rgb(0, 255, ${amplitudeValues.current[num]})`;
+        domElements[num].style.height = `${amplitudeValues.current[num]}px`;
+      }
+    },
+    [frequencyBandArray]
+  );
 
-  function runSpectrum() {
-    props.getFrequencyData(adjustFreqBandStyle);
+  const runSpectrum = React.useCallback(() => {
+    getFrequencyData(adjustFreqBandStyle);
     requestAnimationFrame(runSpectrum);
-  }
+  }, [getFrequencyData, adjustFreqBandStyle]);
 
-  function handleStartButtonClick() {
-    props.initializeAudioAnalyser();
+  const handleStartButtonClick = React.useCallback(() => {
+    toggleAudio();
     requestAnimationFrame(runSpectrum);
-  }
+  }, [toggleAudio, runSpectrum]);
 
   return (
     <div>
@@ -50,7 +53,7 @@ const VisualDemo = (props) => {
         <Tooltip title="Start" aria-label="Start" placement="right">
           <IconButton
             id="startButton"
-            onClick={() => handleStartButtonClick()}
+            onClick={handleStartButtonClick}
             // disabled={!!props.audioData ? true : false}
           >
             <EqualizerIcon />
@@ -59,7 +62,7 @@ const VisualDemo = (props) => {
       </div>
 
       <div className={classes.flexContainer}>
-        {props.frequencyBandArray.map((num) => (
+        {frequencyBandArray.map((num) => (
           <Paper
             className={"frequencyBands"}
             elevation={4}
