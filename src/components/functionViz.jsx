@@ -28,9 +28,11 @@ const VisualDemo = ({ toggleAudio, frequencyBandArray, getFrequencyData }) => {
       );
       for (let i = 0; i < frequencyBandArray.length; i++) {
         let num = frequencyBandArray[i];
+        // This controls the color of every bar
         domElements[
           num
         ].style.backgroundColor = `rgb(0, 255, ${amplitudeValues.current[num]})`;
+        // This controls the height of every bar
         domElements[num].style.height = `${amplitudeValues.current[num]}px`;
       }
     },
@@ -61,7 +63,7 @@ const VisualDemo = ({ toggleAudio, frequencyBandArray, getFrequencyData }) => {
         {frequencyBandArray.map((num) => (
           <Paper
             className={"frequencyBands"}
-            elevation={4}
+            elevation={24}
             id={num}
             key={num}
           />
