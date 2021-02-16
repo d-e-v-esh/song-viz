@@ -1,48 +1,45 @@
-import React, { useRef, useEffect, useState } from "react";
-import Paper from "@material-ui/core/Paper";
-import IconButton from "@material-ui/core/IconButton";
-import Tooltip from "@material-ui/core/Tooltip";
-import EqualizerIcon from "@material-ui/icons/Equalizer";
-import { makeStyles } from "@material-ui/core/styles";
-import "../stylesheets/App.scss";
-
-const useStyles = makeStyles((theme) => ({
-  flexContainer: {
-    display: "flex",
-    flexWrap: "wrap",
-    justifyContent: "center",
-    paddingTop: "25%",
-  },
-}));
+import React, { useRef } from "react";
 
 const VisualDemo = ({ toggleAudio, frequencyBandArray, getFrequencyData }) => {
-  const classes = useStyles();
-
+  const canvas = useRef(null);
   const amplitudeValues = useRef(null);
+  // constants
+  const width = window.innerWidth;
+  const height = window.innerHeight;
+  const bars = 555;
+  const bar_width = 1;
+  const radius = 0;
+  const center_x = width / 2;
+  const center_y = height / 2;
 
-  const adjustFreqBandStyle = React.useCallback(
-    (newAmplitudeData) => {
-      amplitudeValues.current = newAmplitudeData;
-      let domElements = frequencyBandArray.map((num) =>
-        document.getElementById(num)
-      );
-      for (let i = 0; i < frequencyBandArray.length; i++) {
-        let num = frequencyBandArray[i];
-        // This controls the color of every bar
-        domElements[
-          num
-        ].style.backgroundColor = `rgb(0, 255, ${amplitudeValues.current[num]})`;
-        // This controls the height of every bar
-        domElements[num].style.height = `${amplitudeValues.current[num]}px`;
-      }
-    },
-    [frequencyBandArray]
-  );
+  let ctx, x_end, y_end, bar_height;
 
-  const runSpectrum = React.useCallback(() => {
-    getFrequencyData(adjustFreqBandStyle);
-    requestAnimationFrame(runSpectrum);
-  }, [getFrequencyData, adjustFreqBandStyle]);
+  const animationLooper = (canvas) => {
+    canvas.width = width;
+    canvas.height = height;
+
+    ctx = canvas.getContext("2d");
+
+    for (var i = 0; i < bars; i++) {
+      //divide a circle into equal part
+      const rads = (Math.PI * 2) / bars;
+
+      // Math is magical
+      bar_height = this.frequency_array[i] * 2;
+
+      const x = center_x + Math.cos(rads * i) * radius;
+      const y = center_y + Math.sin(rads * i) * radius;
+      x_end = center_x + Math.cos(rads * i) * (radius + bar_height);
+      y_end = center_y + Math.sin(rads * i) * (radius + bar_height);
+
+      //draw a bar
+      this.drawBar(x, y, x_end, y_end, this.frequency_array[i], ctx, canvas);
+    }
+  };
+  // const runSpectrum = React.useCallback(() => {
+  // getFrequencyData(loopSpectrum);
+  //   requestAnimationFrame(runSpectrum);
+  // }, [getFrequencyData, loopSpectrum]);
 
   const handleStartButtonClick = React.useCallback(() => {
     toggleAudio();
@@ -52,22 +49,8 @@ const VisualDemo = ({ toggleAudio, frequencyBandArray, getFrequencyData }) => {
   return (
     <div>
       <div>
-        <Tooltip title="Start" aria-label="Start" placement="right">
-          <IconButton id="startButton" onClick={handleStartButtonClick}>
-            <EqualizerIcon />
-          </IconButton>
-        </Tooltip>
-      </div>
-
-      <div className={classes.flexContainer}>
-        {frequencyBandArray.map((num) => (
-          <Paper
-            className={"frequencyBands"}
-            elevation={24}
-            id={num}
-            key={num}
-          />
-        ))}
+        <button onClick={toggleAudio}>Play/Pause</button>
+        <canvas ref={canvas} />
       </div>
     </div>
   );
