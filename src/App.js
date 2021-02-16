@@ -1,12 +1,13 @@
 import React from "react";
-import melon from "./water.mp3";
-import Container from "./components/Container";
-import FunctionCont from "./components/functionCont";
+// import FunctionCont from "./components/functionCont";
+// import Visualizer from "./components/Visualizer";
+import Canvas from "./components/Circle";
 function App() {
   return (
     <div>
-      <FunctionCont />
-      {/* <Container /> */}
+      {/* <FunctionCont /> */}
+      {/* <Visualizer /> */}
+      <Canvas />
     </div>
   );
 }
