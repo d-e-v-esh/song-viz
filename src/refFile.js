@@ -1,7 +1,7 @@
-const myCanvas = document.getElementById("myCanvas");
-const ctx = myCanvas.getContext("2d");
+const canvas = document.getElementById("myCanvas");
+const ctx = canvas.getContext("2d");
 
-let freqs;
+let frequency_array;
 
 navigator.mediaDevices.enumerateDevices().then((devices) => {
   devices.forEach((d, i) => console.log(d.label, i));
@@ -18,7 +18,7 @@ navigator.mediaDevices.enumerateDevices().then((devices) => {
       source.connect(analyser);
       analyser.connect(context.destination);
 
-      freqs = new Uint8Array(analyser.frequencyBinCount);
+      frequency_array = new Uint8Array(analyser.frequencyBinCount);
 
       function draw() {
         let radius = 75;
@@ -26,44 +26,46 @@ navigator.mediaDevices.enumerateDevices().then((devices) => {
 
         // Draw Background
         ctx.fillStyle = "black";
-        ctx.fillRect(0, 0, myCanvas.width, myCanvas.height);
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
 
         // Draw circle
         ctx.beginPath();
-        ctx.arc(
-          myCanvas.width / 2,
-          myCanvas.height / 2,
-          radius,
-          0,
-          2 * Math.PI
-        );
+        ctx.arc(canvas.width / 2, canvas.height / 2, radius, 0, 2 * Math.PI);
         ctx.stroke();
-        analyser.getByteFrequencyData(freqs);
+        analyser.getByteFrequencyData(frequency_array);
 
         // Draw label
         ctx.font = "500 24px Helvetica Neue";
         const avg =
-          [...Array(255).keys()].reduce((acc, curr) => acc + freqs[curr], 0) /
-          255;
+          [...Array(255).keys()].reduce(
+            (acc, curr) => acc + frequency_array[curr],
+            0
+          ) / 255;
         ctx.fillStyle = "rgb(" + 200 + ", " + (200 - avg) + ", " + avg + ")";
         ctx.textAlign = "center";
         ctx.textBaseline = "top";
-        ctx.fillText("SPACE", myCanvas.width / 2, myCanvas.height / 2 - 24);
-        ctx.fillText("FORCE", myCanvas.width / 2, myCanvas.height / 2 + 6);
+        ctx.fillText("SPACE", canvas.width / 2, canvas.height / 2 - 24);
+        ctx.fillText("FORCE", canvas.width / 2, canvas.height / 2 + 6);
 
         // Draw bars
         for (var i = 0; i < bars; i++) {
           let radians = (Math.PI * 2) / bars;
-          let bar_height = freqs[i] * 0.5;
+          let bar_height = frequency_array[i] * 0.5;
 
-          let x = myCanvas.width / 2 + Math.cos(radians * i) * radius;
-          let y = myCanvas.height / 2 + Math.sin(radians * i) * radius;
+          let x = canvas.width / 2 + Math.cos(radians * i) * radius;
+          let y = canvas.height / 2 + Math.sin(radians * i) * radius;
           let x_end =
-            myCanvas.width / 2 + Math.cos(radians * i) * (radius + bar_height);
+            canvas.width / 2 + Math.cos(radians * i) * (radius + bar_height);
           let y_end =
-            myCanvas.height / 2 + Math.sin(radians * i) * (radius + bar_height);
+            canvas.height / 2 + Math.sin(radians * i) * (radius + bar_height);
           let color =
-            "rgb(" + 200 + ", " + (200 - freqs[i]) + ", " + freqs[i] + ")";
+            "rgb(" +
+            200 +
+            ", " +
+            (200 - frequency_array[i]) +
+            ", " +
+            frequency_array[i] +
+            ")";
           ctx.strokeStyle = color;
           ctx.lineWidth = 3;
           ctx.beginPath();
