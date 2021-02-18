@@ -7,9 +7,9 @@ let ctx, x_end, y_end, bar_height, rafId;
 // constants
 const width = window.innerWidth;
 const height = window.innerHeight;
-const bars = 555;
-const bar_width = 1;
-const radius = 0;
+const bars = 20;
+const bar_width = 10;
+const radius = 80;
 const center_x = width / 2;
 const center_y = height / 2;
 
@@ -34,10 +34,9 @@ const CircleFunc = () => {
     ctx = canvas.getContext("2d");
 
     for (var i = 0; i < bars; i++) {
-      //divide a circle into equal part
+      // divide a circle into equal part
       const rads = (Math.PI * 2) / bars;
 
-      // Math is magical
       bar_height = frequency_array[i] * 2;
 
       const x = center_x + Math.cos(rads * i) * radius;
