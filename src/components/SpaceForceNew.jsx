@@ -14,9 +14,6 @@ const radius = 50;
 const bar_width = 15;
 const fftSize = 1024;
 
-const center_x = width / 2;
-const center_y = height / 2;
-
 const NewSpaceForce = () => {
   const audio = new Audio(songFile);
   const context = new (window.AudioContext || window.webkitAudioContext)();
