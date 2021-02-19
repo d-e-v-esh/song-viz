@@ -8,54 +8,59 @@ let ctx, x_end, y_end, bar_height, rafId;
 // constants
 const width = window.innerWidth;
 const height = window.innerHeight;
-const bars = 64;
-const bar_width = 15;
-const fftSize = 1024;
+const bars = 512;
+const bar_width = 2;
 
 const NewSpaceForce = () => {
   const audio = new Audio(songFile);
   const context = new (window.AudioContext || window.webkitAudioContext)();
   const canvas = createRef();
   const analyser = context.createAnalyser();
-  // 1024 seems the best yet for fftSize
-  analyser.fftSize = fftSize;
-  const frequency_array = new Uint8Array(analyser.frequencyBinCount);
+  analyser.fftSize = 2048; // This is the default anyway
+  const bufferLength = analyser.frequencyBinCount;
+  console.log(bufferLength);
+  const frequency_array = new Uint8Array(bufferLength);
+
   useEffect(() => {
-    console.log("component will mount executed");
     const source = context.createMediaElementSource(audio);
 
     source.connect(analyser);
     analyser.connect(context.destination);
   }, []);
 
-  const rms = (input) => {
-    var sum = 0;
-    for (var i = 0; i < input.length; i++) {
-      sum += input[i] * input[i];
+  const rms = (args) => {
+    var rms = 0;
+    for (var i = 0; i < args.length; i++) {
+      rms += Math.pow(args[i], 2);
     }
-    return Math.sqrt(sum / input.length);
+
+    rms = rms / args.length;
+    rms = Math.sqrt(rms);
+
+    return rms;
   };
   const dataArray = new Uint8Array(analyser.fftSize); // Uint8Array should be the same length as the fftSize
-  analyser.getByteTimeDomainData(dataArray);
-
-  const loudness = 10;
 
   const animationLooper = (canvas) => {
+    analyser.getByteFrequencyData(frequency_array);
+    // console.log(frequency_array);
     canvas.width = width;
 
-    console.log(rms(frequency_array));
+    const currentRMS = rms(frequency_array);
+    const workingRMS = Math.max(100, 100 + currentRMS);
+    console.log(workingRMS, currentRMS);
+
     canvas.height = height;
-    const baseRadius = 50;
+    const baseRadius = workingRMS;
     // const radius = baseRadius * loudness;
-    const radius = baseRadius + rms(frequency_array);
+    const radius = baseRadius;
 
     ctx = canvas.getContext("2d");
 
-    ctx.beginPath();
-    ctx.arc(canvas.width / 2, canvas.height / 2, radius, 0, 2 * Math.PI);
-    ctx.stroke();
+    // ctx.beginPath();
+    // ctx.arc(canvas.width / 2, canvas.height / 2, radius, 0, 2 * Math.PI);
+    // ctx.stroke();
 
-    analyser.getByteFrequencyData(frequency_array);
     // The average value here is just used to make the color of the bars and text react to the music
     const avg =
       [...Array(255).keys()].reduce(
@@ -66,7 +71,7 @@ const NewSpaceForce = () => {
     for (var i = 0; i < bars; i++) {
       let radians = (Math.PI * 2) / bars;
       // this defines the height of the bar
-      let bar_height = frequency_array[i] * 1;
+      let bar_height = frequency_array[i] * 0.2;
 
       // x and y are coordinates of where the end point of a bar any second should be
       let x = canvas.width / 2 + Math.cos(radians * i) * radius;
