@@ -1,6 +1,5 @@
 import React, { useEffect, createRef } from "react";
 import songFile from "../audio/water.mp3";
-
 // Changing Variables
 let ctx, x_end, y_end, bar_height, rafId;
 
