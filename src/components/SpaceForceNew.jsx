@@ -1,9 +1,9 @@
 // Next goal is to make things modular and make use of the helper function
 import React, { useEffect, createRef } from "react";
 import songFile from "../audio/water.mp3";
-
+import rms from "../utils/RMS";
 // Changing Variables
-let ctx, x_end, y_end, bar_height, rafId;
+let ctx, rafId;
 
 // constants
 const width = window.innerWidth;
@@ -28,17 +28,6 @@ const NewSpaceForce = () => {
     analyser.connect(context.destination);
   }, []);
 
-  const rms = (args) => {
-    var rms = 0;
-    for (var i = 0; i < args.length; i++) {
-      rms += Math.pow(args[i], 2);
-    }
-
-    rms = rms / args.length;
-    rms = Math.sqrt(rms);
-
-    return rms;
-  };
   const dataArray = new Uint8Array(analyser.fftSize); // Uint8Array should be the same length as the fftSize
 
   const animationLooper = (canvas) => {
@@ -48,7 +37,7 @@ const NewSpaceForce = () => {
 
     const currentRMS = rms(frequency_array);
     const workingRMS = Math.max(100, 100 + currentRMS);
-    console.log(workingRMS, currentRMS);
+    // console.log(workingRMS, currentRMS);
 
     canvas.height = height;
     const baseRadius = workingRMS;
