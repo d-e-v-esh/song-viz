@@ -17,8 +17,9 @@ function App() {
         bar_width={10}
         fftSizeValue={2048}
         barColor={"blue"}
-        RMSMultiplier={0.5}
-        baseRadiusValue={100}
+        RMSMultiplier={1}
+        baseRadiusValue={10}
+        barHeightValue={0.3}
       />
       {/* <Canvas /> */}
     </div>

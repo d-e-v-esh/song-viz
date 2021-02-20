@@ -3,6 +3,7 @@
 # dependencies
 /node_modules
 /wave
+/WaveformViz
 /.pnp
 .pnp.js
 

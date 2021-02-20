@@ -12,7 +12,7 @@ const height = window.innerHeight;
 // const bar_width = 2;
 const bounce = true;
 const rootLineVisible = true;
-
+const colorReact = true;
 const NewSpaceForce = ({
   bars,
   bar_width,
@@ -20,6 +20,7 @@ const NewSpaceForce = ({
   barColor,
   baseRadiusValue,
   RMSMultiplier,
+  barHeightValue,
 }) => {
   const audio = new Audio(songFile);
   const context = new (window.AudioContext || window.webkitAudioContext)();
@@ -43,7 +44,7 @@ const NewSpaceForce = ({
     canvas.width = width;
     canvas.height = height;
 
-    let radius;
+    let radius, color;
     if (bounce) {
       const currentRMS = rms(frequency_array);
       const workingRMS = Math.max(
@@ -76,7 +77,7 @@ const NewSpaceForce = ({
     for (var i = 0; i < bars; i++) {
       let radians = (Math.PI * 2) / bars;
       // this defines the height of the bar
-      let bar_height = frequency_array[i] * 0.2;
+      let bar_height = frequency_array[i] * barHeightValue;
 
       // x and y are coordinates of where the end point of a bar any second should be
       let x = canvas.width / 2 + Math.cos(radians * i) * radius;
@@ -86,7 +87,10 @@ const NewSpaceForce = ({
       let y_end =
         canvas.height / 2 + Math.sin(radians * i) * (radius + bar_height);
 
-      let color = barColor;
+      if (colorReact) {
+      } else if (!colorReact) {
+        color = barColor;
+      }
       ctx.strokeStyle = color;
       ctx.lineWidth = bar_width;
       ctx.beginPath();
