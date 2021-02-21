@@ -67,14 +67,15 @@ const NewSpaceForce = ({
     const makeRootLineVisible = (ctx) => {
       ctx.save();
       ctx.beginPath();
-      ctx.arc(canvas.width / 4, canvas.height / 2, radius, 0, 2 * Math.PI);
+      ctx.arc(canvas.width / 2, canvas.height / 2, radius, 0, 2 * Math.PI);
       // ctx.drawImage(kshmr, 10, 10);
       ctx.strokeStyle = "#2465D3"; // color of the circle
       ctx.stroke();
       ctx.clip();
-      ctx.drawImage(oneMoreRound, 0, 0, 300, 300);
-      // ctx.drawImage(img, 0, 0, 300, 300);
+      // 1000 here can be radius * 2
+      ctx.drawImage(oneMoreRound, 200, 200, 1000, 1000);
       ctx.restore();
+      // this is just to fill the circle with a color
       // ctx.fillStyle = "red";
       // ctx.fill();
       ctx.stroke();
