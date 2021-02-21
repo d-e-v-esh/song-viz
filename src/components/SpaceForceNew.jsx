@@ -24,8 +24,9 @@ const NewSpaceForce = ({
   barHeightValue,
 }) => {
   // Setting default props
-  const oneMoreRound = new Image(kshmr); // Image constructor
-  console.log(kshmr);
+  const oneMoreRound = new Image(200, 200); // Image constructor
+  oneMoreRound.src = kshmr;
+  // console.log(kshmr);
   const audio = new Audio(songFile);
   const context = new (window.AudioContext || window.webkitAudioContext)();
   const canvas = createRef();
@@ -144,6 +145,8 @@ const NewSpaceForce = ({
     <>
       <button onClick={togglePlay}>Play/Pause</button>
       <canvas ref={canvas} />
+      {/* <img src={oneMoreRound} alt="Logo" />
+       */}
     </>
   );
 };
