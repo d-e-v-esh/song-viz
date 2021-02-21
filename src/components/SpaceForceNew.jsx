@@ -2,6 +2,7 @@
 import React, { useEffect, createRef } from "react";
 import songFile from "../audio/water.mp3";
 import rms from "../utils/RMS";
+import kshmr from "../img/kshmrOneMoreRound.jpg";
 // Changing Variables
 let ctx, rafId;
 
@@ -22,6 +23,9 @@ const NewSpaceForce = ({
   RMSMultiplier,
   barHeightValue,
 }) => {
+  // Setting default props
+  const oneMoreRound = new Image(kshmr); // Image constructor
+  console.log(kshmr);
   const audio = new Audio(songFile);
   const context = new (window.AudioContext || window.webkitAudioContext)();
   const canvas = createRef();
@@ -39,6 +43,7 @@ const NewSpaceForce = ({
 
   const animationLooper = (canvas) => {
     ctx = canvas.getContext("2d");
+    // analyser.getByteTimeDomainData(frequency_array);
     analyser.getByteFrequencyData(frequency_array);
     // console.log(frequency_array);
     canvas.width = width;
@@ -60,7 +65,12 @@ const NewSpaceForce = ({
     // console.log(workingRMS, currentRMS);
     const makeRootLineVisible = (ctx) => {
       ctx.beginPath();
-      ctx.arc(canvas.width / 2, canvas.height / 2, radius, 0, 2 * Math.PI);
+      ctx.arc(canvas.width / 4, canvas.height / 2, radius, 0, 2 * Math.PI);
+      // ctx.drawImage(kshmr, 10, 10);
+
+      // ctx.drawImage(oneMoreRound, 0, 0, 50, 50);
+      ctx.fillStyle = "red";
+      ctx.fill();
       ctx.stroke();
     };
     if (rootLineVisible) {
@@ -88,9 +98,18 @@ const NewSpaceForce = ({
         canvas.height / 2 + Math.sin(radians * i) * (radius + bar_height);
 
       if (colorReact) {
+        color =
+          "rgb(" +
+          200 +
+          ", " +
+          (200 - frequency_array[i]) +
+          ", " +
+          frequency_array[i] +
+          ")";
       } else if (!colorReact) {
         color = barColor;
       }
+
       ctx.strokeStyle = color;
       ctx.lineWidth = bar_width;
       ctx.beginPath();

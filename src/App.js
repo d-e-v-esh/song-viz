@@ -13,12 +13,12 @@ function App() {
       {/* <CircleFunc /> */}
       {/* <SpaceForce /> */}
       <NewSpaceForce
-        bars={60}
-        bar_width={10}
+        bars={600}
+        bar_width={1}
         fftSizeValue={2048}
         barColor={"blue"}
-        RMSMultiplier={1}
-        baseRadiusValue={10}
+        RMSMultiplier={0.5}
+        baseRadiusValue={100}
         barHeightValue={0.3}
       />
       {/* <Canvas /> */}
