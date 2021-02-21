@@ -1,6 +1,6 @@
 // Next goal is to make things modular and make use of the helper function
 import React, { useEffect, createRef } from "react";
-import songFile from "../audio/water.mp3";
+import songFile from "../audio/water.wav";
 import rms from "../utils/RMS";
 import kshmr from "../img/kshmrOneMoreRound.jpg";
 // Changing Variables
@@ -64,13 +64,18 @@ const NewSpaceForce = ({
     radius = baseRadius;
     // console.log(workingRMS, currentRMS);
     const makeRootLineVisible = (ctx) => {
+      ctx.save();
       ctx.beginPath();
       ctx.arc(canvas.width / 4, canvas.height / 2, radius, 0, 2 * Math.PI);
       // ctx.drawImage(kshmr, 10, 10);
-
-      // ctx.drawImage(oneMoreRound, 0, 0, 50, 50);
-      ctx.fillStyle = "red";
-      ctx.fill();
+      ctx.strokeStyle = "#2465D3"; // color of the circle
+      ctx.stroke();
+      ctx.clip();
+      ctx.drawImage(oneMoreRound, 0, 0, 300, 300);
+      // ctx.drawImage(img, 0, 0, 300, 300);
+      ctx.restore();
+      // ctx.fillStyle = "red";
+      // ctx.fill();
       ctx.stroke();
     };
     if (rootLineVisible) {
