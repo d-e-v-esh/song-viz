@@ -1,6 +1,7 @@
 import React from "react";
 import SpaceForce from "./components/SpaceForce";
 import NewSpaceForce from "./components/SpaceForceNew";
+import kshmr from "./img/kshmrOneMoreRound.jpg";
 function App() {
   return (
     <div>
@@ -13,6 +14,7 @@ function App() {
         RMSMultiplier={2.5}
         baseRadiusValue={100}
         barHeightValue={0.8}
+        centerImage={kshmr}
       />
     </div>
   );

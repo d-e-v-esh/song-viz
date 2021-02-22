@@ -2,7 +2,6 @@
 import React, { useEffect, createRef } from "react";
 import songFile from "../audio/water.wav";
 import rms from "../utils/RMS";
-import kshmr from "../img/kshmrOneMoreRound.jpg";
 // Changing Variables
 let ctx, rafId;
 
@@ -22,11 +21,26 @@ const NewSpaceForce = ({
   baseRadiusValue,
   RMSMultiplier,
   barHeightValue,
+  centerImage,
 }) => {
   // Setting default props
-  const oneMoreRound = new Image(200, 200); // Image constructor
-  oneMoreRound.src = kshmr;
-  // console.log(kshmr);
+
+  ///
+  //
+  ///
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+
+  // Loading Image Component
+  const oneMoreRound = new Image(); // Image constructor
+  oneMoreRound.src = centerImage;
+  // Loading Audio Component
   const audio = new Audio(songFile);
   const context = new (window.AudioContext || window.webkitAudioContext)();
   const canvas = createRef();
@@ -53,6 +67,7 @@ const NewSpaceForce = ({
     let radius, color;
     if (bounce) {
       const currentRMS = rms(frequency_array);
+      console.log(currentRMS);
       const workingRMS = Math.max(
         baseRadiusValue,
         baseRadiusValue + currentRMS * RMSMultiplier
@@ -91,12 +106,13 @@ const NewSpaceForce = ({
       // console.log(ctx);
     }
     // The average value here is just used to make the color of the bars and text react to the music
-    // const avg =
-    //   [...Array(255).keys()].reduce(
-    //     (acc, curr) => acc + frequency_array[curr],
-    //     0
-    //   ) / 255;
+    const avg =
+      [...Array(255).keys()].reduce(
+        (acc, curr) => acc + frequency_array[curr],
+        0
+      ) / 255;
 
+    console.log("avg", avg);
     for (var i = 0; i < bars; i++) {
       let radians = (Math.PI * 2) / bars;
       // this defines the height of the bar
