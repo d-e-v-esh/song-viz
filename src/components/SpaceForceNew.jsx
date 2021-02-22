@@ -73,7 +73,13 @@ const NewSpaceForce = ({
       ctx.stroke();
       ctx.clip();
       // 1000 here can be radius * 2
-      ctx.drawImage(oneMoreRound, 200, 200, 1000, 1000);
+      ctx.drawImage(
+        oneMoreRound,
+        canvas.width / 2 - radius,
+        canvas.height / 2 - radius,
+        radius * 2,
+        radius * 2
+      );
       ctx.restore();
       // this is just to fill the circle with a color
       // ctx.fillStyle = "red";
@@ -85,11 +91,11 @@ const NewSpaceForce = ({
       // console.log(ctx);
     }
     // The average value here is just used to make the color of the bars and text react to the music
-    const avg =
-      [...Array(255).keys()].reduce(
-        (acc, curr) => acc + frequency_array[curr],
-        0
-      ) / 255;
+    // const avg =
+    //   [...Array(255).keys()].reduce(
+    //     (acc, curr) => acc + frequency_array[curr],
+    //     0
+    //   ) / 255;
 
     for (var i = 0; i < bars; i++) {
       let radians = (Math.PI * 2) / bars;
