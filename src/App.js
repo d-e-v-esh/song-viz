@@ -14,7 +14,7 @@ function App() {
         RMSMultiplier={2.5}
         baseRadiusValue={100}
         barHeightMultiplier={0.8}
-        centerImageSrc={kshmr}
+        // centerImageSrc={kshmr}
         bounce={true}
         rootLineVisible={true}
       />

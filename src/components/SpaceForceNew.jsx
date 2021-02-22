@@ -4,7 +4,7 @@ import songFile from "../audio/water.wav";
 import rms from "../utils/RMS";
 // Changing Variables
 let ctx, rafId;
-
+const rootLineColor = "#FFFFFF";
 // TODO: need to change this
 const width = window.innerWidth;
 const height = window.innerHeight;
@@ -46,9 +46,7 @@ const NewSpaceForce = ({
   if (bounce === undefined) {
     bounce = true;
   }
-  if (rootLineVisible === undefined) {
-    rootLineVisible = true;
-  }
+
   console.log(centerImageSrc);
   //
   ///
@@ -102,13 +100,19 @@ const NewSpaceForce = ({
     }
     radius = baseRadius;
 
-    const makeRootLineVisible = (ctx) => {
+    const imageComponent = (ctx) => {
       ctx.save();
       ctx.beginPath();
-
       ctx.arc(canvas.width / 2, canvas.height / 2, radius, 0, 2 * Math.PI);
-      ctx.lineWidth = 0; // width of the baseline
-      ctx.strokeStyle = "white"; // color of the circle
+      ctx.lineWidth = 40; // width of the baseline
+
+      if (rootLineVisible === false || rootLineVisible === undefined) {
+        ctx.strokeStyle = "white"; // color of the circle
+        ctx.lineWidth = 1;
+      } else if (rootLineVisible) {
+        ctx.lineWidth = 40;
+        ctx.strokeStyle = "black"; // color of the circle
+      }
 
       ctx.stroke();
       ctx.clip();
@@ -133,9 +137,7 @@ const NewSpaceForce = ({
       // ctx.fill();
       // ctx.stroke();
     };
-    if (rootLineVisible) {
-      makeRootLineVisible(ctx);
-    }
+    // Find a better way to call this function
     const avg =
       [...Array(255).keys()].reduce(
         (acc, curr) => acc + frequency_array[curr],
@@ -176,6 +178,7 @@ const NewSpaceForce = ({
       ctx.lineTo(x_end, y_end);
       ctx.stroke();
     }
+    imageComponent(ctx);
   };
 
   const togglePlay = () => {
