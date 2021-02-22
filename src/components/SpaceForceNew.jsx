@@ -8,24 +8,42 @@ let ctx, rafId;
 // TODO: need to change this
 const width = window.innerWidth;
 const height = window.innerHeight;
-// const barColor = "red";
-// const bar_width = 2;
-const bounce = true;
-const rootLineVisible = true;
-const colorReact = true;
 const NewSpaceForce = ({
   bars,
-  bar_width,
+  barWidth,
   fftSizeValue,
   barColor,
   baseRadiusValue,
   RMSMultiplier,
-  barHeightValue,
-  centerImage,
+  barHeightMultiplier,
+  centerImageSrc,
+  bounce,
+  rootLineVisible,
 }) => {
-  // Setting default props
+  // Setting default prop values
 
-  ///
+  if (bars === undefined) {
+    bars = 600;
+  }
+  if (barWidth === undefined) {
+    barWidth = 5;
+  }
+  if (fftSizeValue === undefined) {
+    fftSizeValue = 2048;
+  }
+  if (barColor === undefined) {
+    barColor = "lightpink";
+  }
+  if (baseRadiusValue === undefined) {
+    baseRadiusValue = 100;
+  }
+  if (RMSMultiplier === undefined) {
+    RMSMultiplier = 1;
+  }
+  if (barHeightMultiplier === undefined) {
+    barHeightMultiplier = 1;
+  }
+  console.log(centerImageSrc);
   //
   ///
   //
@@ -38,36 +56,33 @@ const NewSpaceForce = ({
   //
 
   // Loading Image Component
-  const oneMoreRound = new Image(); // Image constructor
-  oneMoreRound.src = centerImage;
-  // Loading Audio Component
-  const audio = new Audio(songFile);
-  const context = new (window.AudioContext || window.webkitAudioContext)();
+  const centerImage = new Image();
+  centerImage.src = centerImageSrc;
+  // Managing Audio
+  const audio = new Audio(songFile); // Loading audio file
+  const audioCtx = new (window.AudioContext || window.webkitAudioContext)(); // Creating audio Context
   const canvas = createRef();
-  const analyser = context.createAnalyser();
-  analyser.fftSize = fftSizeValue; // This is the default anyway
+  const analyser = audioCtx.createAnalyser(); // Creating Analyser Node
+  analyser.fftSize = fftSizeValue;
   const bufferLength = analyser.frequencyBinCount;
   const frequency_array = new Uint8Array(bufferLength);
 
   useEffect(() => {
-    const source = context.createMediaElementSource(audio);
+    const source = audioCtx.createMediaElementSource(audio);
 
     source.connect(analyser);
-    analyser.connect(context.destination);
+    analyser.connect(audioCtx.destination);
   }, []);
 
   const animationLooper = (canvas) => {
     ctx = canvas.getContext("2d");
-    // analyser.getByteTimeDomainData(frequency_array);
     analyser.getByteFrequencyData(frequency_array);
-    // console.log(frequency_array);
     canvas.width = width;
     canvas.height = height;
 
     let radius, color;
     if (bounce) {
       const currentRMS = rms(frequency_array);
-      console.log(currentRMS);
       const workingRMS = Math.max(
         baseRadiusValue,
         baseRadiusValue + currentRMS * RMSMultiplier
@@ -83,18 +98,24 @@ const NewSpaceForce = ({
       ctx.save();
       ctx.beginPath();
       ctx.arc(canvas.width / 2, canvas.height / 2, radius, 0, 2 * Math.PI);
-      // ctx.drawImage(kshmr, 10, 10);
-      ctx.strokeStyle = "#2465D3"; // color of the circle
+      ctx.lineWidth = 2; // width of the baseline
+      // ctx.strokeStyle = "green"; // color of the circle
+
       ctx.stroke();
       ctx.clip();
-      // 1000 here can be radius * 2
-      ctx.drawImage(
-        oneMoreRound,
-        canvas.width / 2 - radius,
-        canvas.height / 2 - radius,
-        radius * 2,
-        radius * 2
-      );
+
+      if (centerImageSrc === undefined) {
+      }
+      if (centerImageSrc) {
+        ctx.drawImage(
+          centerImage,
+          canvas.width / 2 - radius,
+          canvas.height / 2 - radius,
+          radius * 2,
+          radius * 2
+        );
+      }
+
       ctx.restore();
       // this is just to fill the circle with a color
       // ctx.fillStyle = "red";
@@ -103,44 +124,42 @@ const NewSpaceForce = ({
     };
     if (rootLineVisible) {
       makeRootLineVisible(ctx);
-      // console.log(ctx);
     }
-    // The average value here is just used to make the color of the bars and text react to the music
     const avg =
       [...Array(255).keys()].reduce(
         (acc, curr) => acc + frequency_array[curr],
         0
       ) / 255;
 
-    console.log("avg", avg);
     for (var i = 0; i < bars; i++) {
       let radians = (Math.PI * 2) / bars;
       // this defines the height of the bar
-      let bar_height = frequency_array[i] * barHeightValue;
+      let barHeight = frequency_array[i] * barHeightMultiplier;
 
       // x and y are coordinates of where the end point of a bar any second should be
       let x = canvas.width / 2 + Math.cos(radians * i) * radius;
       let y = canvas.height / 2 + Math.sin(radians * i) * radius;
       let x_end =
-        canvas.width / 2 + Math.cos(radians * i) * (radius + bar_height);
+        canvas.width / 2 + Math.cos(radians * i) * (radius + barHeight);
       let y_end =
-        canvas.height / 2 + Math.sin(radians * i) * (radius + bar_height);
+        canvas.height / 2 + Math.sin(radians * i) * (radius + barHeight);
 
-      if (colorReact) {
-        color =
-          "rgb(" +
-          200 +
-          ", " +
-          (200 - frequency_array[i]) +
-          ", " +
-          frequency_array[i] +
-          ")";
-      } else if (!colorReact) {
-        color = barColor;
-      }
+      // if (colorReact) {
+      //   color =
+      //     "rgb(" +
+      //     40 +
+      //     ", " +
+      //     (avg / 10 - frequency_array[i]) +
+      //     ", " +
+      //     frequency_array[i] +
+      //     ")";
+      // } else if (!colorReact) {
+      // color = barColor;
+      // }
 
+      color = barColor;
       ctx.strokeStyle = color;
-      ctx.lineWidth = bar_width;
+      ctx.lineWidth = barWidth;
       ctx.beginPath();
       ctx.moveTo(x, y);
       ctx.lineTo(x_end, y_end);
@@ -168,8 +187,6 @@ const NewSpaceForce = ({
     <>
       <button onClick={togglePlay}>Play/Pause</button>
       <canvas ref={canvas} />
-      {/* <img src={oneMoreRound} alt="Logo" />
-       */}
     </>
   );
 };
