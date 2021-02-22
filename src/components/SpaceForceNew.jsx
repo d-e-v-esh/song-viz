@@ -43,6 +43,12 @@ const NewSpaceForce = ({
   if (barHeightMultiplier === undefined) {
     barHeightMultiplier = 1;
   }
+  if (bounce === undefined) {
+    bounce = true;
+  }
+  if (rootLineVisible === undefined) {
+    rootLineVisible = true;
+  }
   console.log(centerImageSrc);
   //
   ///
@@ -81,6 +87,8 @@ const NewSpaceForce = ({
     canvas.height = height;
 
     let radius, color;
+
+    // Handling Bounce Prop
     if (bounce) {
       const currentRMS = rms(frequency_array);
       const workingRMS = Math.max(
@@ -93,17 +101,20 @@ const NewSpaceForce = ({
       baseRadius = baseRadiusValue;
     }
     radius = baseRadius;
-    // console.log(workingRMS, currentRMS);
+
     const makeRootLineVisible = (ctx) => {
       ctx.save();
       ctx.beginPath();
+
       ctx.arc(canvas.width / 2, canvas.height / 2, radius, 0, 2 * Math.PI);
-      ctx.lineWidth = 2; // width of the baseline
-      // ctx.strokeStyle = "green"; // color of the circle
+      ctx.lineWidth = 0; // width of the baseline
+      ctx.strokeStyle = "white"; // color of the circle
 
       ctx.stroke();
       ctx.clip();
 
+      // If an image is passed then it will be showed otherwise nothing will be showed
+      // There is a better way to do this
       if (centerImageSrc === undefined) {
       }
       if (centerImageSrc) {
@@ -120,7 +131,7 @@ const NewSpaceForce = ({
       // this is just to fill the circle with a color
       // ctx.fillStyle = "red";
       // ctx.fill();
-      ctx.stroke();
+      // ctx.stroke();
     };
     if (rootLineVisible) {
       makeRootLineVisible(ctx);
