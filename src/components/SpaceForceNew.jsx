@@ -1,5 +1,5 @@
 import React, { useEffect, createRef, useState } from "react";
-import songFile from "../audio/water.wav";
+
 import rms from "../utils/RMS";
 // Changing Variables
 let ctx, rafId;
@@ -7,7 +7,6 @@ let ctx, rafId;
 const width = window.innerWidth;
 const height = window.innerHeight;
 const NewSpaceForce = ({
-  // barWidth,
   bars,
   barDimensions,
   fftSizeValue,
@@ -16,13 +15,10 @@ const NewSpaceForce = ({
   centerImageSrc,
   bounceMultiplier,
   circProperties,
-
-  // RMSMultiplier and bounce can be combined into bounceMultiplier. If this prop is passed then it is true itself. It can take a second value that can define the frequency range that the RMS should react to.
-  //-------------------------
-  // We need a useState hook setting the play and paused state with true and false and shift the app dependency from audio playing and pausing to hook being true and false
-  // Will try making caps for better effects in the next version.
+  audioSrc,
 }) => {
   let bounce, RMSMultiplier, circWidth, circColor;
+  const songFile = audioSrc;
 
   const [isPlaying, setIsPlaying] = useState(false);
   // TODO: Add type checking for the props
@@ -223,3 +219,8 @@ const NewSpaceForce = ({
 };
 
 export default NewSpaceForce;
+
+// RMSMultiplier and bounce can be combined into bounceMultiplier. If this prop is passed then it is true itself. It can take a second value that can define the frequency range that the RMS should react to.
+//-------------------------
+// We need a useState hook setting the play and paused state with true and false and shift the app dependency from audio playing and pausing to hook being true and false
+// Will try making caps for better effects in the next version.
