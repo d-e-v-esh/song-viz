@@ -7,16 +7,13 @@ function App() {
     <div>
       {/* <SpaceForce /> */}
       <NewSpaceForce
-        bars={50}
-        barWidth={10}
-        fftSizeValue={2048}
-        barColor={"lightpink"}
-        RMSMultiplier={2.5}
-        baseRadiusValue={100}
-        barHeightMultiplier={0.8}
-        // centerImageSrc={kshmr}
-        bounce={true}
-        rootLineVisible={true}
+        bars={[32]} // done
+        barColor={"lightpink"} //  done
+        baseRadiusValue={100} //  done
+        barDimensions={[4, 0.8]}
+        bounceMultiplier={2}
+        centerImageSrc={kshmr} //  done
+        circProperties={[12, "black"]}
       />
     </div>
   );

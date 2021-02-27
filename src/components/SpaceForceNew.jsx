@@ -1,63 +1,76 @@
-// Next goal is to make things modular and make use of the helper function
-import React, { useEffect, createRef } from "react";
+import React, { useEffect, createRef, useState } from "react";
 import songFile from "../audio/water.wav";
 import rms from "../utils/RMS";
 // Changing Variables
 let ctx, rafId;
-const rootLineColor = "#FFFFFF";
 // TODO: need to change this
 const width = window.innerWidth;
 const height = window.innerHeight;
 const NewSpaceForce = ({
+  // barWidth,
   bars,
-  barWidth,
+  barDimensions,
   fftSizeValue,
   barColor,
   baseRadiusValue,
-  RMSMultiplier,
-  barHeightMultiplier,
   centerImageSrc,
-  bounce,
-  rootLineVisible,
-}) => {
-  // Setting default prop values
+  bounceMultiplier,
+  circProperties,
 
-  if (bars === undefined) {
-    bars = 600;
+  // RMSMultiplier and bounce can be combined into bounceMultiplier. If this prop is passed then it is true itself. It can take a second value that can define the frequency range that the RMS should react to.
+  //-------------------------
+  // We need a useState hook setting the play and paused state with true and false and shift the app dependency from audio playing and pausing to hook being true and false
+  // Will try making caps for better effects in the next version.
+}) => {
+  let bounce, RMSMultiplier, circWidth, circColor;
+
+  const [isPlaying, setIsPlaying] = useState(false);
+  // TODO: Add type checking for the props
+
+  // Setting bar dimensions
+  const barWidth = barDimensions[0];
+  const barHeightMultiplier = barDimensions[1];
+
+  // Setting bounce and RMS
+  if (bounceMultiplier) {
+    bounce = true;
+    RMSMultiplier = bounceMultiplier;
   }
-  if (barWidth === undefined) {
-    barWidth = 5;
+
+  // Setting Circumference properties
+  if (circProperties) {
+    circWidth = circProperties[0];
+    circColor = circProperties[1];
   }
+
   if (fftSizeValue === undefined) {
     fftSizeValue = 2048;
   }
-  if (barColor === undefined) {
-    barColor = "lightpink";
-  }
-  if (baseRadiusValue === undefined) {
-    baseRadiusValue = 100;
-  }
-  if (RMSMultiplier === undefined) {
-    RMSMultiplier = 1;
-  }
-  if (barHeightMultiplier === undefined) {
-    barHeightMultiplier = 1;
-  }
-  if (bounce === undefined) {
-    bounce = true;
-  }
+  // Setting default prop values
 
-  console.log(centerImageSrc);
-  //
-  ///
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
+  // if (bars === undefined) {
+  //   bars = 600;
+  // }
+
+  // console.log(bars)
+  // if (barWidth === undefined) {
+  //   barWidth = 5;
+  // }
+  // if (barColor === undefined) {
+  //   barColor = "lightpink";
+  // }
+  // if (baseRadiusValue === undefined) {
+  //   baseRadiusValue = 100;
+  // }
+  // if (RMSMultiplier === undefined) {
+  //   RMSMultiplier = 1;
+  // }
+  // if (barHeightMultiplier === undefined) {
+  //   barHeightMultiplier = 1;
+  // }
+  // if (bounce === undefined) {
+  //   bounce = true;
+  // }
 
   // Loading Image Component
   const centerImage = new Image();
@@ -68,6 +81,7 @@ const NewSpaceForce = ({
   const canvas = createRef();
   const analyser = audioCtx.createAnalyser(); // Creating Analyser Node
   analyser.fftSize = fftSizeValue;
+  // analyser.smoothingTimeConstant = 0.9; // default is 0.8
   const bufferLength = analyser.frequencyBinCount;
   const frequency_array = new Uint8Array(bufferLength);
 
@@ -106,22 +120,23 @@ const NewSpaceForce = ({
       ctx.arc(canvas.width / 2, canvas.height / 2, radius, 0, 2 * Math.PI);
       ctx.lineWidth = 40; // width of the baseline
 
-      if (rootLineVisible === false || rootLineVisible === undefined) {
+      if (circProperties === false || circProperties === undefined) {
         ctx.strokeStyle = "white"; // color of the circle
         ctx.lineWidth = 1;
-      } else if (rootLineVisible) {
-        ctx.lineWidth = 40;
-        ctx.strokeStyle = "black"; // color of the circle
+      } else if (circProperties) {
+        ctx.lineWidth = circWidth;
+        ctx.strokeStyle = circColor; // color of the circle
       }
 
       ctx.stroke();
       ctx.clip();
 
       // If an image is passed then it will be showed otherwise nothing will be showed
-      // There is a better way to do this
+      // There is a better way to do this (truthy and falsy)
       if (centerImageSrc === undefined) {
       }
       if (centerImageSrc) {
+        // Rotation would probably happen from changing the second and third values
         ctx.drawImage(
           centerImage,
           canvas.width / 2 - radius,
@@ -136,6 +151,7 @@ const NewSpaceForce = ({
       // ctx.fillStyle = "red";
       // ctx.fill();
       // ctx.stroke();
+      ctx.rotate((20 * Math.PI) / 180);
     };
     // Find a better way to call this function
     const avg =
@@ -178,6 +194,7 @@ const NewSpaceForce = ({
       ctx.lineTo(x_end, y_end);
       ctx.stroke();
     }
+    // imageComponent is called here so that the border layer is above the bar layer
     imageComponent(ctx);
   };
 
