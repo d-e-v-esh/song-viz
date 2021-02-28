@@ -6,10 +6,10 @@ function App() {
   return (
     <div>
       <NewSpaceForce
-        bars={20} // done
+        bars={600} // done
         barColor={"lightpink"} //  done
         baseRadiusValue={100} //  done
-        barDimensions={[20, 0.8]}
+        barDimensions={[3, 0.8]}
         bounceMultiplier={1}
         centerImageSrc={kshmr} //  done
         circProperties={[12, "black"]}

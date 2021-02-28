@@ -6,7 +6,6 @@ let ctx, rafId;
 
 const getInterpolatedArray = (firstColor, secondColor, noOfSteps) => {
   // Returns a single rgb color interpolation between given rgb color
-  // based on the factor given; via https://codepen.io/njmcode/pen/axoyD?editors=0010
   function interpolateColor(color1, color2, factor) {
     // if we don't pass in factor then set default value
     if (arguments.length < 3) {
@@ -15,8 +14,12 @@ const getInterpolatedArray = (firstColor, secondColor, noOfSteps) => {
     var result = color1.slice();
     for (var i = 0; i < 3; i++) {
       result[i] = Math.round(result[i] + factor * (color2[i] - color1[i]));
+
+      var resultRGB = `rgb(${result[0]}, ${result[1]}, ${result[2]})`;
+      // console.log(result, "this is result");
     }
-    return result;
+    // console.log(resultRGB, "this is result");
+    return resultRGB;
   }
   // My function to interpolate between two colors completely, returning an array
   const interpolateColors = (color1, color2, steps) => {
@@ -64,6 +67,12 @@ const NewSpaceForce = ({
 
   const [isPlaying, setIsPlaying] = useState(false);
   // TODO: Add type checking for the props
+
+  const currentInterpolationArray = getInterpolatedArray(
+    "rgb(248, 239, 179)",
+    "rgb(209, 98, 50)",
+    255
+  );
 
   // Setting bar dimensions
   const barWidth = barDimensions[0];
@@ -216,18 +225,8 @@ const NewSpaceForce = ({
       // color = "rgb(" + 200 + ", " + (200 - avg) + ", " + avg + ")";
 
       let colorChanger = 255 - frequency_array[i];
-      let colorChanger2 = 255 - frequency_array[i];
-      let color =
-        "rgb(" + 200 + ", " + (200 - colorChanger) + ", " + colorChanger + ")";
-
-      var grd = ctx.createLinearGradient(0, 0, 180, 0);
-      grd.addColorStop(0, "red");
-      grd.addColorStop(1, "blue");
-
-      // color = grd;
-
-      ctx.fillStyle = grd;
-      ctx.fillRect(20, 20, 150, 100);
+      // let color = `rgb(200,${200 - colorChanger}, ${colorChanger})`;
+      let color = currentInterpolationArray[frequency_array[i]];
 
       // "rgb(" +
       // 250 +
