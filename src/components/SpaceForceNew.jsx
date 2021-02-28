@@ -3,6 +3,48 @@ import React, { useEffect, createRef, useState } from "react";
 import rms from "../utils/RMS";
 // Changing Variables
 let ctx, rafId;
+
+const getInterpolatedArray = (firstColor, secondColor, noOfSteps) => {
+  // Returns a single rgb color interpolation between given rgb color
+  // based on the factor given; via https://codepen.io/njmcode/pen/axoyD?editors=0010
+  function interpolateColor(color1, color2, factor) {
+    // if we don't pass in factor then set default value
+    if (arguments.length < 3) {
+      factor = 0.5;
+    }
+    var result = color1.slice();
+    for (var i = 0; i < 3; i++) {
+      result[i] = Math.round(result[i] + factor * (color2[i] - color1[i]));
+    }
+    return result;
+  }
+  // My function to interpolate between two colors completely, returning an array
+  const interpolateColors = (color1, color2, steps) => {
+    var stepFactor = 1 / (steps - 1),
+      interpolatedColorArray = [];
+
+    color1 = color1.match(/\d+/g).map(Number);
+    color2 = color2.match(/\d+/g).map(Number);
+
+    for (var i = 0; i < steps; i++) {
+      interpolatedColorArray.push(
+        interpolateColor(color1, color2, stepFactor * i)
+      );
+    }
+
+    return interpolatedColorArray;
+  };
+
+  // document.body.innerText += interpolateColors(
+  // "rgb(94, 79, 162)",
+  // "rgb(247, 148, 89)",
+  // 147
+  // ).join("\n");
+  return interpolateColors(firstColor, secondColor, noOfSteps);
+};
+
+console.log(getInterpolatedArray("rgb(255, 0, 0)", "rgb(0, 0, 255)", 10));
+
 // TODO: need to change this
 const width = window.innerWidth;
 const height = window.innerHeight;
@@ -42,6 +84,7 @@ const NewSpaceForce = ({
   if (fftSizeValue === undefined) {
     fftSizeValue = 2048;
   }
+
   // Setting default prop values
 
   // if (bars === undefined) {
@@ -170,19 +213,45 @@ const NewSpaceForce = ({
         canvas.height / 2 + Math.sin(radians * i) * (radius + barHeight);
 
       // if (colorReact) {
-      //   color =
-      //     "rgb(" +
-      //     40 +
-      //     ", " +
-      //     (avg / 10 - frequency_array[i]) +
-      //     ", " +
-      //     frequency_array[i] +
-      //     ")";
+      // color = "rgb(" + 200 + ", " + (200 - avg) + ", " + avg + ")";
+
+      let colorChanger = 255 - frequency_array[i];
+      let colorChanger2 = 255 - frequency_array[i];
+      let color =
+        "rgb(" + 200 + ", " + (200 - colorChanger) + ", " + colorChanger + ")";
+
+      var grd = ctx.createLinearGradient(0, 0, 180, 0);
+      grd.addColorStop(0, "red");
+      grd.addColorStop(1, "blue");
+
+      // color = grd;
+
+      ctx.fillStyle = grd;
+      ctx.fillRect(20, 20, 150, 100);
+
+      // "rgb(" +
+      // 250 +
+      // ", " +
+      // frequency_array[i] +
+      // ", " +
+      // frequency_array[i] +
+      // ")";
+      // color =
+      //   "rgb(" +
+      //   200 +
+      //   ", " +
+      //   (avg / 200 - frequency_array[i]) +
+      //   ", " +
+      //   frequency_array[i] +
+      //   ")";
       // } else if (!colorReact) {
-      // color = barColor;
+      //   color = barColor;
       // }
 
-      color = barColor;
+      // ctx.filter = "blur(1px)";
+      // ctx.globalAlpha = 0.1;
+      // color = barColor;
+
       ctx.strokeStyle = color;
       ctx.lineWidth = barWidth;
       ctx.beginPath();
@@ -190,8 +259,11 @@ const NewSpaceForce = ({
       ctx.lineTo(x_end, y_end);
       ctx.stroke();
     }
+    // My function to interpolate between two colors completely, returning an array
+
     // imageComponent is called here so that the border layer is above the bar layer
     imageComponent(ctx);
+    // console.log(grd);
   };
 
   const togglePlay = () => {
