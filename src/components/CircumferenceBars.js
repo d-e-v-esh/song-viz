@@ -1,8 +1,20 @@
 import React, { useEffect, createRef } from "react";
 
-import rms from "../utils/RMS";
 // Changing Variables
 let ctx, rafId;
+
+const rms = (args) => {
+  var rms = 0;
+  for (var i = 0; i < args.length; i++) {
+    rms += Math.pow(args[i], 2);
+  }
+
+  rms = rms / args.length;
+  rms = Math.sqrt(rms);
+
+  return rms;
+};
+
 const getInterpolatedArray = (firstColor, secondColor, noOfSteps) => {
   // Returns a single rgb color interpolation between given rgb color
   function interpolateColor(color1, color2, factor) {
@@ -19,7 +31,7 @@ const getInterpolatedArray = (firstColor, secondColor, noOfSteps) => {
     // console.log(resultRGB, "this is result");
     return resultRGB;
   }
-  // My function to interpolate between two colors completely, returning an array
+  // function to interpolate between two colors completely, returning an array
   const interpolateColors = (color1, color2, steps) => {
     var stepFactor = 1 / (steps - 1),
       interpolatedColorArray = [];
@@ -36,12 +48,7 @@ const getInterpolatedArray = (firstColor, secondColor, noOfSteps) => {
   return interpolateColors(firstColor, secondColor, noOfSteps);
 };
 
-console.log(getInterpolatedArray("rgb(255, 0, 0)", "rgb(0, 0, 255)", 10));
-
-// TODO: need to change this
-// const width = window.innerWidth;
-// const height = window.innerHeight;
-const NewSpaceForce = ({
+const CircumferenceBars = ({
   mainCanvasWidth,
   mainCanvasHeight,
   bars,
@@ -54,64 +61,50 @@ const NewSpaceForce = ({
   circProperties,
   audioSrc,
 }) => {
-  let bounce, RMSMultiplier, circWidth, circColor;
+  let bounce, RMSMultiplier, circWidth, circColor, color;
   const width = mainCanvasWidth;
   const height = mainCanvasHeight;
   const songFile = audioSrc;
 
   // TODO: Add type checking for the props
 
-  const currentInterpolationArray = getInterpolatedArray(
-    "rgb(248, 239, 179)",
-    "rgb(209, 98, 50)",
-    255
-  );
-
   // Setting bar dimensions
-  const barWidth = barDimensions[0];
-  const barHeightMultiplier = barDimensions[1];
+  const barWidth = barDimensions.width;
+  const barHeightMultiplier = barDimensions.heightMultiplier;
 
+  var currentInterpolationArray;
   // Setting bounce and RMS
   if (bounceMultiplier) {
     bounce = true;
     RMSMultiplier = bounceMultiplier;
   }
 
-  // Setting Circumference properties
+  // Setting Circumference properties if entered
   if (circProperties) {
-    circWidth = circProperties[0];
-    circColor = circProperties[1];
+    circWidth = circProperties.circWidth;
+    circColor = circProperties.circColor;
   }
 
-  if (fftSizeValue === undefined) {
-    fftSizeValue = 2048;
+  // Color input handling according to if one color is entered or two
+  if (Object.keys(barColor).length === 1 && barColor.colorOne) {
+    currentInterpolationArray = getInterpolatedArray(
+      barColor.colorOne,
+      barColor.colorOne,
+      255
+    );
+  } else if (Object.keys(barColor).length === 1 && barColor.colorTwo) {
+    currentInterpolationArray = getInterpolatedArray(
+      barColor.colorTwo,
+      barColor.colorTwo,
+      255
+    );
+  } else if (Object.keys(barColor).length === 2) {
+    currentInterpolationArray = getInterpolatedArray(
+      barColor.colorOne,
+      barColor.colorTwo,
+      255
+    );
   }
-
-  // Setting default prop values
-
-  // if (bars === undefined) {
-  //   bars = 600;
-  // }
-
-  // console.log(bars)
-  // if (barWidth === undefined) {
-  //   barWidth = 5;
-  // }
-  // if (barColor === undefined) {
-  //   barColor = "lightpink";
-  // }
-  // if (baseRadiusValue === undefined) {
-  //   baseRadiusValue = 100;
-  // }
-  // if (RMSMultiplier === undefined) {
-  //   RMSMultiplier = 1;
-  // }
-  // if (barHeightMultiplier === undefined) {
-  //   barHeightMultiplier = 1;
-  // }
-  // if (bounce === undefined) {
-  //   bounce = true;
-  // }
 
   // Loading Image Component
   const centerImage = new Image();
@@ -133,7 +126,7 @@ const NewSpaceForce = ({
     analyser.connect(audioCtx.destination);
   }, []);
 
-  const animationLooper = (canvas) => {
+  const drawSpectrum = (canvas) => {
     ctx = canvas.getContext("2d");
     analyser.getByteFrequencyData(frequency_array);
     canvas.width = width;
@@ -141,7 +134,7 @@ const NewSpaceForce = ({
 
     let radius;
 
-    // Handling Bounce Prop
+    // Handling Bounce
     if (bounce) {
       const currentRMS = rms(frequency_array);
       const workingRMS = Math.max(
@@ -159,7 +152,6 @@ const NewSpaceForce = ({
       ctx.save();
       ctx.beginPath();
       ctx.arc(canvas.width / 2, canvas.height / 2, radius, 0, 2 * Math.PI);
-      ctx.lineWidth = 40; // width of the baseline
 
       if (circProperties === false || circProperties === undefined) {
         ctx.strokeStyle = "white"; // color of the circle
@@ -175,7 +167,9 @@ const NewSpaceForce = ({
       // If an image is passed then it will be showed otherwise nothing will be showed
       // There is a better way to do this (truthy and falsy)
       if (centerImageSrc === undefined) {
+        // do nothing
       }
+
       if (centerImageSrc) {
         // Rotation would probably happen from changing the second and third values
         ctx.drawImage(
@@ -194,12 +188,6 @@ const NewSpaceForce = ({
       ctx.rotate((20 * Math.PI) / 180);
     };
     // Find a better way to call this function
-    const avg =
-      [...Array(255).keys()].reduce(
-        (acc, curr) => acc + frequency_array[curr],
-        0
-      ) / 255;
-
     for (var i = 0; i < bars; i++) {
       let radians = (Math.PI * 2) / bars;
       // this defines the height of the bar
@@ -213,10 +201,7 @@ const NewSpaceForce = ({
       let y_end =
         canvas.height / 2 + Math.sin(radians * i) * (radius + barHeight);
 
-      // color = "rgb(" + 200 + ", " + (200 - avg) + ", " + avg + ")";
-
-      let colorChanger = 255 - frequency_array[i];
-      let color = currentInterpolationArray[frequency_array[i]];
+      color = currentInterpolationArray[frequency_array[i]];
 
       ctx.strokeStyle = color;
       ctx.lineWidth = barWidth;
@@ -227,7 +212,6 @@ const NewSpaceForce = ({
     }
     // imageComponent is called here so that the border layer is above the bar layer
     imageComponent(ctx);
-    // console.log(grd);
   };
 
   const togglePlay = () => {
@@ -241,7 +225,7 @@ const NewSpaceForce = ({
   };
 
   const tick = () => {
-    animationLooper(canvas.current);
+    drawSpectrum(canvas.current);
     analyser.getByteTimeDomainData(frequency_array);
     rafId = requestAnimationFrame(tick);
   };
@@ -275,10 +259,11 @@ const NewSpaceForce = ({
   return (
     <>
       <canvas ref={canvas} />
+      <button onClick={togglePlay}>Play/Pause</button>
     </>
   );
 };
 
-export default NewSpaceForce;
+export default CircumferenceBars;
 
 // RMSMultiplier and bounce can be combined into bounceMultiplier. If this prop is passed then it is true itself. It can take a second value that can define the frequency range that the RMS should react to.
