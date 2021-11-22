@@ -111,6 +111,7 @@ const CircumferenceBars = ({
   centerImage.src = centerImageSrc;
   // Managing Audio
   const audio = new Audio(songFile); // Loading audio file
+  // audio.play()
   const audioCtx = new (window.AudioContext || window.webkitAudioContext)(); // Creating audio Context
   const canvas = createRef();
   const analyser = audioCtx.createAnalyser(); // Creating Analyser Node
@@ -122,6 +123,7 @@ const CircumferenceBars = ({
   useEffect(() => {
     const source = audioCtx.createMediaElementSource(audio);
 
+    // togglePlay()
     source.connect(analyser);
     analyser.connect(audioCtx.destination);
   }, []);
@@ -215,6 +217,8 @@ const CircumferenceBars = ({
   };
 
   const togglePlay = () => {
+
+    console.log(audio.paused)
     if (audio.paused) {
       audio.play();
       rafId = requestAnimationFrame(tick);
