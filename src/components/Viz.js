@@ -125,21 +125,21 @@ const Viz = () => {
   //   rafId = requestAnimationFrame(tick);
   // };
 
-  // const togglePlay = () => {
-  //   console.log(audio.paused);
-  //   if (audio.paused) {
-  //     audio.play();
-  //     rafId = requestAnimationFrame(tick);
-  //   } else {
-  //     audio.pause();
-  //     cancelAnimationFrame(rafId);
-  //   }
-  // };
+  const togglePlay = () => {
+    console.log(audio.paused);
+    if (audio.paused) {
+      audio.play();
+      // rafId = requestAnimationFrame(tick);
+    } else {
+      audio.pause();
+      // cancelAnimationFrame(rafId);
+    }
+  };
 
   return (
     <div>
       <canvas ref={canvasRef} />
-      {/* <button onClick={togglePlay}>asdfasdf</button> */}
+      <button onClick={togglePlay}>asdfasdf</button>
     </div>
   );
 };
