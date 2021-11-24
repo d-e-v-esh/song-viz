@@ -42,7 +42,16 @@ function App() {
         /> */}
       </div>
 
-      <Viz songFile={songFile} audioRef={audioRef} />
+      <Viz
+        songFile={songFile}
+        audioRef={audioRef}
+        centerImageSrc={kshmr}
+        circleProps={{ circleWidth: 12, circleColor: "black" }}
+        barColor={{
+          colorOne: "rgb(248,239,179)",
+          colorTwo: "rgb(124,13,50)",
+        }}
+      />
 
       <audio src={songFile} controls ref={audioRef} />
 
