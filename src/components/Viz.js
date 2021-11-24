@@ -17,9 +17,10 @@ var drawVisual;
 let radius = 200;
 
 const Viz = () => {
-  const audio = useMemo(() => {
-    return new Audio(songFile);
-  });
+  // const audio = useMemo(() => {
+  //   return new Audio(songFile);
+  // });
+  const [audio] = useState(new Audio(songFile));
   const [audioContext, setAudioContext] = useState();
   const [audioSource, setAudioSource] = useState();
   const [canvasContext, setCanvasContext] = useState();
