@@ -10,9 +10,9 @@ import React, {
 import songFile from "../water.wav";
 
 let rafId;
-let bars = 100;
+let bars = 500;
 let barHeightMultiplier = 2;
-let barWidth = 10;
+let barWidth = 2;
 var drawVisual;
 let radius = 200;
 
@@ -57,22 +57,17 @@ const Viz = () => {
     }
 
     // togglePlay();
-  }, [audioSource, dataArray.current]);
+  }, [audioSource]);
 
   useEffect(() => {
     if (audioContext) {
       setAudioSource(audioContext.createMediaElementSource(audio));
 
       audioAnalyser.current = audioContext.createAnalyser();
-      // console.log(audioAnalyser);
       dataArray.current = new Float32Array(
         audioAnalyser.current.frequencyBinCount
       );
-
-      audioAnalyser.current.getFloatFrequencyData(dataArray.current);
-      console.log(dataArray.current);
       audio.play();
-      // audioAnalyser.current.getByteTimeDomainData(dataArray.current);
     }
   }, [audioContext]);
 
