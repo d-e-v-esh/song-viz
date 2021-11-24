@@ -7,14 +7,13 @@ import React, {
   useMemo,
 } from "react";
 
-// import songFile from "../water.wav";
-
-let rafId;
 let bars = 500;
 let barHeightMultiplier = 1;
-let barWidth = 2;
+let barWidth = 4;
 var drawVisual;
 let radius = 200;
+let baseRadiusValue = 10;
+let bounceMultiplier = 2;
 
 const Viz = ({ songFile, audioRef }) => {
   const [audio, setAudio] = useState();
@@ -45,9 +44,9 @@ const Viz = ({ songFile, audioRef }) => {
 
   useEffect(() => {
     if (audioSource) {
-      console.log(audioSource);
-      console.log(audioContext);
-      console.log(audioAnalyser);
+      // console.log(audioSource);
+      // console.log(audioContext);
+      // console.log(audioAnalyser);
 
       audioSource.connect(audioAnalyser.current);
       audioAnalyser.current.connect(audioContext.destination);
@@ -75,6 +74,20 @@ const Viz = ({ songFile, audioRef }) => {
     canvasRef.current.width = 1000;
 
     canvasRef.current.height = 1000;
+
+    // Handling Bounce
+    if (bounceMultiplier) {
+      const currentRMS = rms(dataArray.current);
+      const workingRMS = Math.max(
+        baseRadiusValue,
+        baseRadiusValue + currentRMS * bounceMultiplier
+      );
+
+      var baseRadius = workingRMS;
+    } else if (!bounceMultiplier) {
+      baseRadius = baseRadiusValue;
+    }
+    radius = baseRadius;
 
     for (var i = 0; i < bars; i++) {
       let radians = (Math.PI * 2) / bars;
@@ -106,6 +119,18 @@ const Viz = ({ songFile, audioRef }) => {
       <canvas ref={canvasRef} />
     </div>
   );
+};
+
+const rms = (args) => {
+  var rms = 0;
+  for (var i = 0; i < args.length; i++) {
+    rms += Math.pow(args[i], 2);
+  }
+
+  rms = rms / args.length;
+  rms = Math.sqrt(rms);
+
+  return rms;
 };
 
 export default Viz;
