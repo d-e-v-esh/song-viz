@@ -4,6 +4,7 @@ import React, {
   useRef,
   useEffect,
   createRef,
+  useMemo,
 } from "react";
 
 import songFile from "../water.wav";
@@ -16,7 +17,9 @@ var drawVisual;
 let radius = 200;
 
 const Viz = () => {
-  const audio = new Audio(songFile);
+  const audio = useMemo(() => {
+    return new Audio(songFile);
+  });
   const [audioContext, setAudioContext] = useState();
   const [audioSource, setAudioSource] = useState();
   const [canvasContext, setCanvasContext] = useState();
@@ -34,23 +37,6 @@ const Viz = () => {
   useEffect(() => {
     setAudioContext(new AudioContext());
   }, []);
-
-  useEffect(() => {
-    if (audioContext) {
-      setAudioSource(audioContext.createMediaElementSource(audio));
-
-      audioAnalyser.current = audioContext.createAnalyser();
-      // console.log(audioAnalyser);
-      dataArray.current = new Float32Array(
-        audioAnalyser.current.frequencyBinCount
-      );
-
-      audioAnalyser.current.getFloatFrequencyData(dataArray.current);
-      console.log(dataArray.current);
-      audio.play();
-      // audioAnalyser.current.getByteTimeDomainData(dataArray.current);
-    }
-  }, [audioContext]);
 
   useEffect(() => {
     if (audioSource) {
@@ -72,6 +58,23 @@ const Viz = () => {
 
     // togglePlay();
   }, [audioSource, dataArray.current]);
+
+  useEffect(() => {
+    if (audioContext) {
+      setAudioSource(audioContext.createMediaElementSource(audio));
+
+      audioAnalyser.current = audioContext.createAnalyser();
+      // console.log(audioAnalyser);
+      dataArray.current = new Float32Array(
+        audioAnalyser.current.frequencyBinCount
+      );
+
+      audioAnalyser.current.getFloatFrequencyData(dataArray.current);
+      console.log(dataArray.current);
+      audio.play();
+      // audioAnalyser.current.getByteTimeDomainData(dataArray.current);
+    }
+  }, [audioContext]);
 
   useEffect(() => {
     console.log(dataArray);
