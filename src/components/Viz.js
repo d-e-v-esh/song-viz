@@ -11,7 +11,7 @@ import songFile from "../water.wav";
 
 let rafId;
 let bars = 500;
-let barHeightMultiplier = 2;
+let barHeightMultiplier = 1;
 let barWidth = 2;
 var drawVisual;
 let radius = 200;
@@ -47,13 +47,7 @@ const Viz = () => {
       audioSource.connect(audioAnalyser.current);
       audioAnalyser.current.connect(audioContext.destination);
 
-      audioAnalyser.current.getFloatFrequencyData(dataArray.current);
-
-      console.log(dataArray.current);
-
-      // audioSource.start(0);
       drawSpectrum();
-      // audio.play();
     }
 
     // togglePlay();
@@ -64,31 +58,33 @@ const Viz = () => {
       setAudioSource(audioContext.createMediaElementSource(audio));
 
       audioAnalyser.current = audioContext.createAnalyser();
-      dataArray.current = new Float32Array(
+      // dataArray.current = new Float32Array(
+      //   audioAnalyser.current.frequencyBinCount
+      // );
+      dataArray.current = new Uint8Array(
         audioAnalyser.current.frequencyBinCount
       );
+
       audio.play();
     }
+
+    console.log(audio.currentTime);
   }, [audioContext]);
 
-  useEffect(() => {
-    console.log(dataArray);
-  }, [dataArray.current]);
-
   const drawSpectrum = () => {
+    console.log(audio.currentTime);
     drawVisual = requestAnimationFrame(drawSpectrum);
 
-    // audioAnalyser.current.getByteFrequencyData(dataArray.current);
+    audioAnalyser.current.getByteFrequencyData(dataArray.current);
 
     // console.log(audioAnalyser.current);
-    audioAnalyser.current.getFloatFrequencyData(dataArray.current);
+    // audioAnalyser.current.getFloatFrequencyData(dataArray.current);
 
     // analyser.getFloatFrequencyData(dataArray.current);
 
     canvasRef.current.width = 1000;
 
     canvasRef.current.height = 1000;
-    // console.log(canvasRef.current);
 
     canvasContext.beginPath();
     canvasContext.rect(40, 40, 150, 100);
@@ -100,7 +96,7 @@ const Viz = () => {
     for (var i = 0; i < bars; i++) {
       let radians = (Math.PI * 2) / bars;
       // this defines the height of the bar
-      let barHeight = dataArray.current[i] * barHeightMultiplier + 100;
+      let barHeight = dataArray.current[i] * barHeightMultiplier;
       // console.log({ barHeight });
 
       // x and y are coordinates of where the end point of a bar any second should be
