@@ -6,51 +6,114 @@ import React, {
   createRef,
 } from "react";
 
-import songFile from "../water.mp3";
+import songFile from "../water.wav";
+
+let rafId;
+let bars = 100;
+let barHeightMultiplier = 2;
+let barWidth = 10;
+var drawVisual;
+let radius = 200;
 
 const Viz = () => {
-  let rafId;
-  let bars = 100;
-  let barHeightMultiplier = 2;
-  let barWidth = 10;
-
-  let radius = 200;
-  const canvasRef = createRef();
-
   const audio = new Audio(songFile);
-  const audioContext = new (window.AudioContext || window.webkitAudioContext)(); // Creating audio Context
-  const analyser = audioContext.createAnalyser(); // Creating Analyser Node
-  analyser.smoothingTimeConstant = 0.9; //
-  const bufferLength = analyser.frequencyBinCount;
-  const frequency_array = new Uint8Array(bufferLength);
+  const [audioContext, setAudioContext] = useState();
+  const [audioSource, setAudioSource] = useState();
+  const [canvasContext, setCanvasContext] = useState();
+
+  const canvasRef = createRef();
+  const audioAnalyser = useRef();
+  const dataArray = useRef();
 
   useEffect(() => {
-    const source = audioContext.createMediaElementSource(audio);
+    if (canvasRef.current) {
+      setCanvasContext(canvasRef.current.getContext("2d"));
+    }
+  }, [canvasRef]);
 
-    togglePlay();
-    source.connect(analyser);
-    analyser.connect(audioContext.destination);
+  useEffect(() => {
+    setAudioContext(new AudioContext());
   }, []);
 
-  const drawSpectrum = (canvas) => {
-    const canvasContext = canvas.getContext("2d");
+  useEffect(() => {
+    if (audioContext) {
+      setAudioSource(audioContext.createMediaElementSource(audio));
 
-    analyser.getByteFrequencyData(frequency_array);
-    canvas.width = 1000;
-    canvas.height = 1000;
+      audioAnalyser.current = audioContext.createAnalyser();
+      // console.log(audioAnalyser);
+      dataArray.current = new Float32Array(
+        audioAnalyser.current.frequencyBinCount
+      );
+
+      audioAnalyser.current.getFloatFrequencyData(dataArray.current);
+      console.log(dataArray.current);
+      audio.play();
+      // audioAnalyser.current.getByteTimeDomainData(dataArray.current);
+    }
+  }, [audioContext]);
+
+  useEffect(() => {
+    if (audioSource) {
+      console.log(audioSource);
+      console.log(audioContext);
+      console.log(audioAnalyser);
+
+      audioSource.connect(audioAnalyser.current);
+      audioAnalyser.current.connect(audioContext.destination);
+
+      audioAnalyser.current.getFloatFrequencyData(dataArray.current);
+
+      console.log(dataArray.current);
+
+      // audioSource.start(0);
+      drawSpectrum();
+      // audio.play();
+    }
+
+    // togglePlay();
+  }, [audioSource, dataArray.current]);
+
+  useEffect(() => {
+    console.log(dataArray);
+  }, [dataArray.current]);
+
+  const drawSpectrum = () => {
+    drawVisual = requestAnimationFrame(drawSpectrum);
+
+    // audioAnalyser.current.getByteFrequencyData(dataArray.current);
+
+    // console.log(audioAnalyser.current);
+    audioAnalyser.current.getFloatFrequencyData(dataArray.current);
+
+    // analyser.getFloatFrequencyData(dataArray.current);
+
+    canvasRef.current.width = 1000;
+
+    canvasRef.current.height = 1000;
+    // console.log(canvasRef.current);
+
+    canvasContext.beginPath();
+    canvasContext.rect(40, 40, 150, 100);
+
+    canvasContext.fillStyle = "green";
+
+    canvasContext.fill();
 
     for (var i = 0; i < bars; i++) {
       let radians = (Math.PI * 2) / bars;
       // this defines the height of the bar
-      let barHeight = frequency_array[i] * barHeightMultiplier;
+      let barHeight = dataArray.current[i] * barHeightMultiplier + 100;
+      // console.log({ barHeight });
 
       // x and y are coordinates of where the end point of a bar any second should be
-      let x = canvas.width / 2 + Math.cos(radians * i) * radius;
-      let y = canvas.height / 2 + Math.sin(radians * i) * radius;
+      let x = canvasRef.current.width / 2 + Math.cos(radians * i) * radius;
+      let y = canvasRef.current.height / 2 + Math.sin(radians * i) * radius;
       let x_end =
-        canvas.width / 2 + Math.cos(radians * i) * (radius + barHeight);
+        canvasRef.current.width / 2 +
+        Math.cos(radians * i) * (radius + barHeight);
       let y_end =
-        canvas.height / 2 + Math.sin(radians * i) * (radius + barHeight);
+        canvasRef.current.height / 2 +
+        Math.sin(radians * i) * (radius + barHeight);
 
       canvasContext.strokeStyle = "red";
       canvasContext.lineWidth = barWidth;
@@ -61,27 +124,27 @@ const Viz = () => {
     }
   };
 
-  const tick = () => {
-    drawSpectrum(canvasRef.current);
-    analyser.getByteTimeDomainData(frequency_array);
-    rafId = requestAnimationFrame(tick);
-  };
+  // const tick = () => {
+  //   drawSpectrum();
+  //   audioAnalyser.current.getByteTimeDomainData(dataArray.current);
+  //   rafId = requestAnimationFrame(tick);
+  // };
 
-  const togglePlay = () => {
-    console.log(audio.paused);
-    if (audio.paused) {
-      audio.play();
-      rafId = requestAnimationFrame(tick);
-    } else {
-      audio.pause();
-      cancelAnimationFrame(rafId);
-    }
-  };
+  // const togglePlay = () => {
+  //   console.log(audio.paused);
+  //   if (audio.paused) {
+  //     audio.play();
+  //     rafId = requestAnimationFrame(tick);
+  //   } else {
+  //     audio.pause();
+  //     cancelAnimationFrame(rafId);
+  //   }
+  // };
 
   return (
     <div>
       <canvas ref={canvasRef} />
-      <button onClick={togglePlay}>asdfasdf</button>
+      {/* <button onClick={togglePlay}>asdfasdf</button> */}
     </div>
   );
 };

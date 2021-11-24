@@ -1,6 +1,6 @@
 import React from "react";
 import NewSpaceForce from "./components/SpaceForceNew";
-import songFile from "./water.mp3";
+import songFile from "./water.wav";
 import kshmr from "./img/kshmrOneMoreRound.jpg";
 import "./stylesheets/App.scss";
 import CircumferenceBars from "./components/CircumferenceBars";
