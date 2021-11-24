@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import NewSpaceForce from "./components/SpaceForceNew";
 import songFile from "./water.wav";
 import kshmr from "./img/kshmrOneMoreRound.jpg";
@@ -7,15 +7,20 @@ import CircumferenceBars from "./components/CircumferenceBars";
 import Viz from "./components/Viz";
 
 function App() {
-  const audio = new Audio(songFile); // Loading audio file
+  // const audio = new Audio(songFile);
 
-  const togglePlay = () => {
-    if (audio.paused) {
-      audio.play();
-    } else {
-      audio.pause();
-    }
-  };
+  // Loading audio file
+
+  const audioRef = useRef();
+  console.log(audioRef);
+
+  // const togglePlay = () => {
+  //   if (audio.paused) {
+  //     audio.play();
+  //   } else {
+  //     audio.pause();
+  //   }
+  // };
   return (
     <div>
       <div className="myCanvas">
@@ -37,7 +42,10 @@ function App() {
         /> */}
       </div>
 
-      <Viz />
+      <Viz songFile={songFile} audioRef={audioRef} />
+
+      <audio src={songFile} controls ref={audioRef} />
+
       <div>{/* <button onClick={togglePlay}>Play Out</button> */}</div>
     </div>
   );

@@ -7,7 +7,7 @@ import React, {
   useMemo,
 } from "react";
 
-import songFile from "../water.wav";
+// import songFile from "../water.wav";
 
 let rafId;
 let bars = 500;
@@ -16,11 +16,10 @@ let barWidth = 2;
 var drawVisual;
 let radius = 200;
 
-const Viz = () => {
-  // const audio = useMemo(() => {
-  //   return new Audio(songFile);
-  // });
-  const [audio] = useState(new Audio(songFile));
+const Viz = ({ songFile, audioRef }) => {
+  const [audio, setAudio] = useState();
+  // const [audio] = useState(new Audio(songFile));
+
   const [audioContext, setAudioContext] = useState();
   const [audioSource, setAudioSource] = useState();
   const [canvasContext, setCanvasContext] = useState();
@@ -34,6 +33,11 @@ const Viz = () => {
       setCanvasContext(canvasRef.current.getContext("2d"));
     }
   }, [canvasRef]);
+
+  // need to skip this if you use songFile
+  useEffect(() => {
+    setAudio(audioRef.current);
+  }, []);
 
   useEffect(() => {
     setAudioContext(new AudioContext());
@@ -50,26 +54,16 @@ const Viz = () => {
 
       drawSpectrum();
     }
-
-    // togglePlay();
   }, [audioSource]);
 
   useEffect(() => {
     if (audioContext) {
       setAudioSource(audioContext.createMediaElementSource(audio));
-
       audioAnalyser.current = audioContext.createAnalyser();
-      // dataArray.current = new Float32Array(
-      //   audioAnalyser.current.frequencyBinCount
-      // );
       dataArray.current = new Uint8Array(
         audioAnalyser.current.frequencyBinCount
       );
-
-      audio.play();
     }
-
-    console.log(audio.currentTime);
   }, [audioContext]);
 
   const drawSpectrum = () => {
@@ -78,21 +72,9 @@ const Viz = () => {
 
     audioAnalyser.current.getByteFrequencyData(dataArray.current);
 
-    // console.log(audioAnalyser.current);
-    // audioAnalyser.current.getFloatFrequencyData(dataArray.current);
-
-    // analyser.getFloatFrequencyData(dataArray.current);
-
     canvasRef.current.width = 1000;
 
     canvasRef.current.height = 1000;
-
-    canvasContext.beginPath();
-    canvasContext.rect(40, 40, 150, 100);
-
-    canvasContext.fillStyle = "green";
-
-    canvasContext.fill();
 
     for (var i = 0; i < bars; i++) {
       let radians = (Math.PI * 2) / bars;
@@ -119,27 +101,9 @@ const Viz = () => {
     }
   };
 
-  // const tick = () => {
-  //   drawSpectrum();
-  //   audioAnalyser.current.getByteTimeDomainData(dataArray.current);
-  //   rafId = requestAnimationFrame(tick);
-  // };
-
-  const togglePlay = () => {
-    console.log(audio.paused);
-    if (audio.paused) {
-      audio.play();
-      // rafId = requestAnimationFrame(tick);
-    } else {
-      audio.pause();
-      // cancelAnimationFrame(rafId);
-    }
-  };
-
   return (
     <div>
       <canvas ref={canvasRef} />
-      <button onClick={togglePlay}>asdfasdf</button>
     </div>
   );
 };
