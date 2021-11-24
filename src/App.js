@@ -4,7 +4,7 @@ import songFile from "./water.mp3";
 import kshmr from "./img/kshmrOneMoreRound.jpg";
 import "./stylesheets/App.scss";
 import CircumferenceBars from "./components/CircumferenceBars";
-import AUViz from "./components/AUViz";
+import Viz from "./components/Viz";
 
 function App() {
   const audio = new Audio(songFile); // Loading audio file
@@ -19,7 +19,7 @@ function App() {
   return (
     <div>
       <div className="myCanvas">
-        <AUViz
+        {/* <AUViz
           canvasWidth={1920}
           canvasHeight={1080}
           bars={60} // done
@@ -34,12 +34,11 @@ function App() {
             colorOne: "rgb(248,239,179)",
             colorTwo: "rgb(124,13,50)",
           }}
-        />
+        /> */}
       </div>
 
-      <div>
-        <button onClick={togglePlay}>Play Out</button>
-      </div>
+      <Viz />
+      <div>{/* <button onClick={togglePlay}>Play Out</button> */}</div>
     </div>
   );
 }
