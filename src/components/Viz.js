@@ -13,8 +13,8 @@ let barWidth = 4;
 var drawVisual;
 var currentInterpolationArray;
 let radius = 200;
-let baseRadiusValue = 10;
-let bounceMultiplier = 2;
+let baseRadiusValue = 100;
+let bounceMultiplier = 0.5;
 
 const Viz = ({ songFile, audioRef, circleProps, centerImageSrc, barColor }) => {
   const [audio, setAudio] = useState();
@@ -165,7 +165,6 @@ const Viz = ({ songFile, audioRef, circleProps, centerImageSrc, barColor }) => {
       let radians = (Math.PI * 2) / bars;
       // this defines the height of the bar
       let barHeight = dataArray.current[i] * barHeightMultiplier;
-      // console.log({ barHeight });
 
       // x and y are coordinates of where the end point of a bar any second should be
       let x = canvasRef.current.width / 2 + Math.cos(radians * i) * radius;

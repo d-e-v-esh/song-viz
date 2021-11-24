@@ -48,8 +48,8 @@ function App() {
         centerImageSrc={kshmr}
         circleProps={{ circleWidth: 12, circleColor: "black" }}
         barColor={{
-          colorOne: "rgb(248,239,179)",
-          colorTwo: "rgb(124,13,50)",
+          colorOne: "rgba(255,97,45,255)",
+          colorTwo: "rgba(253,235,184,255)",
         }}
       />
 
