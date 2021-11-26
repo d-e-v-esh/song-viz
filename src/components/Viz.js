@@ -3,7 +3,6 @@ import React, { useState, useRef, useEffect, createRef } from "react";
 var currentInterpolationArray;
 
 const Viz = ({
-  audioFile,
   audioRef,
   circleProps,
   centerImageSrc,
@@ -21,8 +20,6 @@ const Viz = ({
   canvasBackground,
 }) => {
   const [audio, setAudio] = useState();
-  // const [audio] = useState(new Audio(songFile));
-
   const [audioContext, setAudioContext] = useState();
   const [audioSource, setAudioSource] = useState();
   const [canvasContext, setCanvasContext] = useState();
@@ -37,14 +34,8 @@ const Viz = ({
     }
   }, [canvasRef]);
 
-  // need to skip this if you use songFile
-  // TODO: Fix this tomorrow so both functions can be used and user can choose whichever is good
   useEffect(() => {
-    // if (audioFile) {
-    // setAudio(new Audio(audioFile));
-    // } else {
     setAudio(audioRef.current);
-    // }
   }, []);
 
   useEffect(() => {

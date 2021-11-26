@@ -33,7 +33,6 @@ function App() {
       </div>
 
       <Viz
-        audioFile={songFile}
         audioRef={audioRef}
         centerImageSrc={kshmr}
         circleProps={{ circleWidth: 12, circleColor: "black" }}
