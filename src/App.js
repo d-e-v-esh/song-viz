@@ -9,18 +9,8 @@ import Viz from "./components/Viz";
 function App() {
   // const audio = new Audio(songFile);
 
-  // Loading audio file
-
   const audioRef = useRef();
-  console.log(audioRef);
 
-  // const togglePlay = () => {
-  //   if (audio.paused) {
-  //     audio.play();
-  //   } else {
-  //     audio.pause();
-  //   }
-  // };
   return (
     <div>
       <div className="myCanvas">
@@ -43,7 +33,7 @@ function App() {
       </div>
 
       <Viz
-        songFile={songFile}
+        audioFile={songFile}
         audioRef={audioRef}
         centerImageSrc={kshmr}
         circleProps={{ circleWidth: 12, circleColor: "black" }}
@@ -51,6 +41,17 @@ function App() {
           colorTwo: "rgba(255,97,45,255)",
           colorOne: "rgba(253,235,184,255)",
         }}
+        radius={200}
+        barHeightMultiplier={1}
+        rotation={true}
+        baseRadiusValue={100}
+        bounceMultiplier={0.5}
+        fftSizeValue={2048}
+        smoothingTimeConstant={0.8}
+        bars={200}
+        barWidth={1}
+        centerColor="red"
+        canvasBackground="white"
       />
 
       <audio src={songFile} controls ref={audioRef} />

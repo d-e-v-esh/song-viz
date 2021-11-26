@@ -1,16 +1,25 @@
 import React, { useState, useRef, useEffect, createRef } from "react";
 
-let bars = 500;
-let barHeightMultiplier = 1;
-let barWidth = 4;
-var drawVisual;
 var currentInterpolationArray;
-let radius = 200;
-let baseRadiusValue = 100;
-let bounceMultiplier = 1.5;
-let rotation = true;
 
-const Viz = ({ songFile, audioRef, circleProps, centerImageSrc, barColor }) => {
+const Viz = ({
+  audioFile,
+  audioRef,
+  circleProps,
+  centerImageSrc,
+  barColor,
+  radius,
+  rotation,
+  barHeightMultiplier,
+  baseRadiusValue,
+  bounceMultiplier,
+  fftSizeValue,
+  smoothingTimeConstant,
+  bars,
+  barWidth,
+  centerColor,
+  canvasBackground,
+}) => {
   const [audio, setAudio] = useState();
   // const [audio] = useState(new Audio(songFile));
 
@@ -31,7 +40,11 @@ const Viz = ({ songFile, audioRef, circleProps, centerImageSrc, barColor }) => {
   // need to skip this if you use songFile
   // TODO: Fix this tomorrow so both functions can be used and user can choose whichever is good
   useEffect(() => {
+    // if (audioFile) {
+    // setAudio(new Audio(audioFile));
+    // } else {
     setAudio(audioRef.current);
+    // }
   }, []);
 
   useEffect(() => {
@@ -40,10 +53,6 @@ const Viz = ({ songFile, audioRef, circleProps, centerImageSrc, barColor }) => {
 
   useEffect(() => {
     if (audioSource) {
-      // console.log(audioSource);
-      // console.log(audioContext);
-      // console.log(audioAnalyser);
-
       audioSource.connect(audioAnalyser.current);
       audioAnalyser.current.connect(audioContext.destination);
 
@@ -55,7 +64,8 @@ const Viz = ({ songFile, audioRef, circleProps, centerImageSrc, barColor }) => {
     if (audioContext) {
       setAudioSource(audioContext.createMediaElementSource(audio));
       audioAnalyser.current = audioContext.createAnalyser();
-      audioAnalyser.current.smoothingTimeConstant = 0.9; // default is 0.8
+      audioAnalyser.current.fftSize = fftSizeValue;
+      audioAnalyser.current.smoothingTimeConstant = smoothingTimeConstant;
       dataArray.current = new Uint8Array(
         audioAnalyser.current.frequencyBinCount
       );
@@ -71,32 +81,37 @@ const Viz = ({ songFile, audioRef, circleProps, centerImageSrc, barColor }) => {
     currentInterpolationArray = getInterpolatedArray(
       barColor.colorOne,
       barColor.colorOne,
-      255
+      256
     );
   } else if (Object.keys(barColor).length === 1 && barColor.colorTwo) {
     currentInterpolationArray = getInterpolatedArray(
       barColor.colorTwo,
       barColor.colorTwo,
-      255
+      256
     );
   } else if (Object.keys(barColor).length === 2) {
     currentInterpolationArray = getInterpolatedArray(
       barColor.colorOne,
       barColor.colorTwo,
-      255
+      256
     );
   }
 
   const drawSpectrum = () => {
-    console.log(audio.currentTime);
-    drawVisual = requestAnimationFrame(drawSpectrum);
+    var drawVisual = requestAnimationFrame(drawSpectrum);
 
-    // console.log({ drawVisual });
     audioAnalyser.current.getByteFrequencyData(dataArray.current);
 
     canvasRef.current.width = 1000;
 
     canvasRef.current.height = 1000;
+    canvasContext.fillStyle = canvasBackground;
+    canvasContext.fillRect(
+      0,
+      0,
+      canvasRef.current.width,
+      canvasRef.current.height
+    );
 
     // Handling Bounce
     if (bounceMultiplier) {
@@ -111,7 +126,6 @@ const Viz = ({ songFile, audioRef, circleProps, centerImageSrc, barColor }) => {
       baseRadius = baseRadiusValue;
     }
     radius = baseRadius;
-    // radius = 100;
 
     const imageComponent = () => {
       canvasContext.save();
@@ -136,9 +150,11 @@ const Viz = ({ songFile, audioRef, circleProps, centerImageSrc, barColor }) => {
       canvasContext.clip();
 
       // If an image is passed then it will be showed otherwise nothing will be showed
-      // There is a better way to do this (truthy and falsy)
       if (centerImageSrc === undefined) {
-        // do nothing
+        // fill the circle with one color
+        canvasContext.fillStyle = centerColor;
+        canvasContext.fill();
+        canvasContext.stroke();
       }
 
       if (centerImageSrc) {
@@ -173,10 +189,6 @@ const Viz = ({ songFile, audioRef, circleProps, centerImageSrc, barColor }) => {
         }
       }
       canvasContext.restore();
-      // this is just to fill the whole circle with a single color
-      // ctx.fillStyle = "red";
-      // ctx.fill();
-      // ctx.stroke();
     };
 
     for (var i = 0; i < bars; i++) {
@@ -195,6 +207,7 @@ const Viz = ({ songFile, audioRef, circleProps, centerImageSrc, barColor }) => {
         Math.sin(radians * i) * (radius + barHeight);
 
       const color = currentInterpolationArray[dataArray.current[i]];
+
       canvasContext.strokeStyle = color;
       canvasContext.lineWidth = barWidth;
       canvasContext.beginPath();
@@ -236,11 +249,10 @@ const getInterpolatedArray = (firstColor, secondColor, noOfSteps) => {
     for (var i = 0; i < 3; i++) {
       result[i] = Math.round(result[i] + factor * (color2[i] - color1[i]));
       var resultRGB = `rgb(${result[0]}, ${result[1]}, ${result[2]})`;
-      // console.log(result, "this is result");
     }
-    // console.log(resultRGB, "this is result");
     return resultRGB;
   }
+
   // function to interpolate between two colors completely, returning an array
   const interpolateColors = (color1, color2, steps) => {
     var stepFactor = 1 / (steps - 1),
@@ -255,6 +267,7 @@ const getInterpolatedArray = (firstColor, secondColor, noOfSteps) => {
     }
     return interpolatedColorArray;
   };
+
   return interpolateColors(firstColor, secondColor, noOfSteps);
 };
 
