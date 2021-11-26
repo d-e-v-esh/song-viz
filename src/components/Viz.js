@@ -7,7 +7,8 @@ var drawVisual;
 var currentInterpolationArray;
 let radius = 200;
 let baseRadiusValue = 100;
-let bounceMultiplier = 0.5;
+let bounceMultiplier = 1.5;
+let rotation = true;
 
 const Viz = ({ songFile, audioRef, circleProps, centerImageSrc, barColor }) => {
   const [audio, setAudio] = useState();
@@ -54,6 +55,7 @@ const Viz = ({ songFile, audioRef, circleProps, centerImageSrc, barColor }) => {
     if (audioContext) {
       setAudioSource(audioContext.createMediaElementSource(audio));
       audioAnalyser.current = audioContext.createAnalyser();
+      audioAnalyser.current.smoothingTimeConstant = 0.9; // default is 0.8
       dataArray.current = new Uint8Array(
         audioAnalyser.current.frequencyBinCount
       );
@@ -140,36 +142,35 @@ const Viz = ({ songFile, audioRef, circleProps, centerImageSrc, barColor }) => {
       }
 
       if (centerImageSrc) {
-        // drawImageRotated(
-        //   canvasContext,
-        //   centerImage,
-        //   canvasRef.current.width / 2,
-        //   canvasRef.current.height / 2,
-        //   0.5,
-        //   0
-        // );
+        if (rotation) {
+          canvasContext.setTransform(
+            1,
+            0,
+            0,
+            1,
+            canvasRef.current.width / 2,
+            canvasRef.current.height / 2
+          );
+          canvasContext.rotate(audio.currentTime / 1);
+          canvasContext.drawImage(
+            centerImage,
+            -radius,
+            -radius,
+            radius * 2, // These two tell the size of the image when we place it in the above coordinate
+            radius * 2
+          );
 
-        canvasContext.setTransform(
-          1,
-          0,
-          0,
-          1,
-          canvasRef.current.width / 2,
-          canvasRef.current.height / 2
-        );
-        canvasContext.rotate(audio.currentTime / 1);
-        canvasContext.drawImage(
-          centerImage,
-          -radius,
-          -radius,
-          radius * 2, // These two tell the size of the image when we place it in the above coordinate
-          radius * 2
-        );
+          canvasContext.setTransform(1, 0, 0, 1, 0, 0);
+        } else {
+          canvasContext.drawImage(
+            centerImage,
 
-        console.log({ width: -centerImage.width / 2 + radius + 50 });
-        console.log({ height: -centerImage.height / 2 + radius + 50 });
-        // console.log(-centerImage.width / 2 - radius);
-        canvasContext.setTransform(1, 0, 0, 1, 0, 0);
+            canvasRef.current.width / 2 - radius,
+            canvasRef.current.height / 2 - radius,
+            radius * 2, // These two tell the size of the image when we place it in the above coordinate
+            radius * 2
+          );
+        }
       }
       canvasContext.restore();
       // this is just to fill the whole circle with a single color
@@ -211,20 +212,6 @@ const Viz = ({ songFile, audioRef, circleProps, centerImageSrc, barColor }) => {
     </div>
   );
 };
-
-function drawImageRotated(canvasContext, img, x, y, scale, rot) {
-  canvasContext.setTransform(scale, 0, 0, scale, x, y);
-  canvasContext.rotate(rot);
-  canvasContext.drawImage(img, -img.width / 2, -img.height / 2);
-  //   canvasContext.drawImage(
-  //   centerImage,
-  //   canvasRef.current.width / 2 - radius,
-  //   canvasRef.current.height / 2 - radius,
-  //   radius * 2,
-  //   radius * 2
-  // );
-  canvasContext.setTransform(1, 0, 0, 1, 0, 0);
-}
 
 const rms = (args) => {
   var rms = 0;
