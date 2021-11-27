@@ -23,6 +23,7 @@ const Viz = ({
   const [audioContext, setAudioContext] = useState();
   const [audioSource, setAudioSource] = useState();
   const [canvasContext, setCanvasContext] = useState();
+  const [hslColor, setHslColor] = useState();
 
   const canvasRef = createRef();
   const audioAnalyser = useRef();
@@ -67,26 +68,60 @@ const Viz = ({
   const centerImage = new Image();
   centerImage.src = centerImageSrc;
 
-  // Color input handling according to if one color is entered or two
-  if (Object.keys(barColor).length === 1 && barColor.colorOne) {
-    currentInterpolationArray = getInterpolatedArray(
-      barColor.colorOne,
-      barColor.colorOne,
-      256
-    );
-  } else if (Object.keys(barColor).length === 1 && barColor.colorTwo) {
-    currentInterpolationArray = getInterpolatedArray(
-      barColor.colorTwo,
-      barColor.colorTwo,
-      256
-    );
-  } else if (Object.keys(barColor).length === 2) {
-    currentInterpolationArray = getInterpolatedArray(
-      barColor.colorOne,
-      barColor.colorTwo,
-      256
-    );
-  }
+  useEffect(() => {
+    switch (Object.keys(barColor).length) {
+      case 1:
+        if (barColor.colorOne) {
+          currentInterpolationArray = getInterpolatedArray(
+            barColor.colorOne,
+            barColor.colorOne,
+            256
+          );
+        }
+        if (barColor.colorTwo) {
+          currentInterpolationArray = getInterpolatedArray(
+            barColor.colorTwo,
+            barColor.colorTwo,
+            256
+          );
+        }
+        if (barColor.hslColor) {
+          setHslColor(barColor.hslColor);
+          console.log(hslColor);
+        }
+        break;
+      case 2:
+        if (barColor.colorOne && barColor.colorTwo) {
+          currentInterpolationArray = getInterpolatedArray(
+            barColor.colorOne,
+            barColor.colorTwo,
+            256
+          );
+        }
+        break;
+      default:
+        currentInterpolationArray = getInterpolatedArray(
+          "rgb(0,0,0)",
+          "rgb(255,255,255)",
+          256
+        );
+    }
+  }, [barColor]);
+
+  // if (Object.keys(barColor).length === 1 && barColor.colorOne) {
+  // } else if (Object.keys(barColor).length === 1 && barColor.colorTwo) {
+  //   currentInterpolationArray = getInterpolatedArray(
+  //     barColor.colorTwo,
+  //     barColor.colorTwo,
+  //     256
+  //   );
+  // } else if (Object.keys(barColor).length === 2) {
+  //   currentInterpolationArray = getInterpolatedArray(
+  //     barColor.colorOne,
+  //     barColor.colorTwo,
+  //     256
+  //   );
+  // }
 
   const drawSpectrum = () => {
     var drawVisual = requestAnimationFrame(drawSpectrum);
@@ -140,9 +175,8 @@ const Viz = ({
       canvasContext.stroke();
       canvasContext.clip();
 
-      // If an image is passed then it will be showed otherwise nothing will be showed
       if (centerImageSrc === undefined) {
-        // fill the circle with one color
+        // If image is not provided then the center circle will be filled up with one Color
         canvasContext.fillStyle = centerColor;
         canvasContext.fill();
         canvasContext.stroke();
@@ -163,7 +197,7 @@ const Viz = ({
             centerImage,
             -radius,
             -radius,
-            radius * 2, // These two tell the size of the image when we place it in the above coordinate
+            radius * 2,
             radius * 2
           );
 
@@ -197,8 +231,20 @@ const Viz = ({
         canvasRef.current.height / 2 +
         Math.sin(radians * i) * (radius + barHeight);
 
-      const color = currentInterpolationArray[dataArray.current[i]];
+      // const color = `hsl(${i}, 100%,  50%)`;
 
+      let color;
+
+      if (hslColor) {
+        color = `hsl(${hslColor[0] * i}, ${hslColor[1]}%, ${hslColor[2]}%)`;
+        console.log(color);
+      } else {
+        console.log(color);
+
+        color = currentInterpolationArray[dataArray.current[i]];
+      }
+
+      // color = currentInterpolationArray[dataArray.current[i]];
       canvasContext.strokeStyle = color;
       canvasContext.lineWidth = barWidth;
       canvasContext.beginPath();
