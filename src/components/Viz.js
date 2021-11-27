@@ -1,4 +1,12 @@
-import React, { useState, useRef, useEffect, createRef } from "react";
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  createRef,
+  useCallback,
+} from "react";
+import { Canvas } from "./Canvas";
+import PropTypes, { number } from "prop-types";
 
 var currentInterpolationArray;
 
@@ -25,21 +33,19 @@ const Viz = ({
   const [canvasContext, setCanvasContext] = useState();
   const [hslColor, setHslColor] = useState();
 
-  const canvasRef = createRef();
+  const canvasRef = useRef(null);
   const audioAnalyser = useRef();
   const dataArray = useRef();
 
   useEffect(() => {
-    if (canvasRef.current) {
-      setCanvasContext(canvasRef.current.getContext("2d"));
-    }
-  }, [canvasRef]);
+    canvasRef.current.width = 1000;
 
-  useEffect(() => {
+    canvasRef.current.height = 1000;
+
+    setCanvasContext(canvasRef.current.getContext("2d"));
+    console.log("1");
+
     setAudio(audioRef.current);
-  }, []);
-
-  useEffect(() => {
     setAudioContext(new AudioContext());
   }, []);
 
@@ -48,6 +54,7 @@ const Viz = ({
       audioSource.connect(audioAnalyser.current);
       audioAnalyser.current.connect(audioContext.destination);
 
+      console.log("2");
       drawSpectrum();
     }
   }, [audioSource]);
@@ -62,6 +69,8 @@ const Viz = ({
         audioAnalyser.current.frequencyBinCount
       );
     }
+    //
+    console.log("3");
   }, [audioContext]);
 
   // Loading Image Component
@@ -87,7 +96,6 @@ const Viz = ({
         }
         if (barColor.hslColor) {
           setHslColor(barColor.hslColor);
-          console.log(hslColor);
         }
         break;
       case 2:
@@ -124,13 +132,14 @@ const Viz = ({
   // }
 
   const drawSpectrum = () => {
+    //
     var drawVisual = requestAnimationFrame(drawSpectrum);
 
     audioAnalyser.current.getByteFrequencyData(dataArray.current);
 
-    canvasRef.current.width = 1000;
+    // canvasRef.current.width = 1000;
 
-    canvasRef.current.height = 1000;
+    // canvasRef.current.height = 1000;
     canvasContext.fillStyle = canvasBackground;
     canvasContext.fillRect(
       0,
@@ -232,14 +241,14 @@ const Viz = ({
         Math.sin(radians * i) * (radius + barHeight);
 
       // const color = `hsl(${i}, 100%,  50%)`;
-
+      // /
       let color;
 
       if (hslColor) {
         color = `hsl(${hslColor[0] * i}, ${hslColor[1]}%, ${hslColor[2]}%)`;
-        console.log(color);
+        // console.log(color);
       } else {
-        console.log(color);
+        // console.log(color);
 
         color = currentInterpolationArray[dataArray.current[i]];
       }
@@ -258,7 +267,8 @@ const Viz = ({
 
   return (
     <div>
-      <canvas ref={canvasRef} />
+      <Canvas ref={canvasRef} height={1280} maxWidth={720} />
+      {/* <canvas ref={canvasRef} /> */}
     </div>
   );
 };
@@ -306,6 +316,32 @@ const getInterpolatedArray = (firstColor, secondColor, noOfSteps) => {
   };
 
   return interpolateColors(firstColor, secondColor, noOfSteps);
+};
+
+Viz.propTypes = {
+  audioRef: PropTypes.object,
+  circleProps: PropTypes.shape({
+    circleWidth: PropTypes.number,
+    circleColor: PropTypes.string,
+  }),
+  centerImageSrc: PropTypes.object,
+  barColor: PropTypes.shape({
+    colorTwo: PropTypes.string,
+    colorOne: PropTypes.string,
+
+    hslColor: PropTypes.arrayOf(PropTypes.number),
+  }),
+  radius: PropTypes.number,
+  rotation: PropTypes.bool,
+  barHeightMultiplier: PropTypes.number,
+  baseRadiusValue: PropTypes.number,
+  bounceMultiplier: PropTypes.number,
+  fftSizeValue: PropTypes.number,
+  smoothingTimeConstant: PropTypes.number,
+  bars: PropTypes.number,
+  barWidth: PropTypes.number,
+  centerColor: PropTypes.string,
+  canvasBackground: PropTypes.string,
 };
 
 export default Viz;
