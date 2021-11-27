@@ -6,7 +6,13 @@ import React, {
   useCallback,
 } from "react";
 import { Canvas } from "./Canvas";
-import PropTypes, { number } from "prop-types";
+import PropTypes from "prop-types";
+
+/*
+  Currently the problems that are available is that we are getting maximum depth exceeded because of the useEffect hooks in case the default values are being used
+
+  canvasRef.current is null on Render after a refresh.
+*/
 
 var currentInterpolationArray;
 
@@ -267,8 +273,8 @@ const Viz = ({
 
   return (
     <div>
-      <Canvas ref={canvasRef} height={720} maxWidth={1280} />
-      {/* <canvas ref={canvasRef} /> */}
+      {/* <Canvas ref={canvasRef} height={720} maxWidth={1280} /> */}
+      <canvas ref={canvasRef} />
     </div>
   );
 };
@@ -324,7 +330,7 @@ Viz.propTypes = {
     circleWidth: PropTypes.number,
     circleColor: PropTypes.string,
   }),
-  centerImageSrc: PropTypes.object,
+  centerImageSrc: PropTypes.string,
   barColor: PropTypes.shape({
     colorTwo: PropTypes.string,
     colorOne: PropTypes.string,
