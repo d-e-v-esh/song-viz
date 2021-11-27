@@ -12,20 +12,20 @@ var currentInterpolationArray;
 
 const Viz = ({
   audioRef,
-  circleProps,
+  circleProps = { circleWidth: 12, circleColor: "black" },
   centerImageSrc,
-  barColor,
-  radius,
-  rotation,
-  barHeightMultiplier,
-  baseRadiusValue,
-  bounceMultiplier,
-  fftSizeValue,
-  smoothingTimeConstant,
-  bars,
-  barWidth,
-  centerColor,
-  canvasBackground,
+  barColor = { hslColor: [2, 100, 50] },
+  radius = 200,
+  rotation = true,
+  barHeightMultiplier = 1,
+  baseRadiusValue = 200,
+  bounceMultiplier = 0.5,
+  fftSizeValue = 512,
+  smoothingTimeConstant = 0.8,
+  bars = 250,
+  barWidth = 5,
+  centerColor = "white",
+  canvasBackground = "black",
 }) => {
   const [audio, setAudio] = useState();
   const [audioContext, setAudioContext] = useState();
@@ -70,7 +70,7 @@ const Viz = ({
       );
     }
     //
-    console.log("3");
+    console.log(typeof audio);
   }, [audioContext]);
 
   // Loading Image Component
@@ -267,7 +267,7 @@ const Viz = ({
 
   return (
     <div>
-      <Canvas ref={canvasRef} height={1280} maxWidth={720} />
+      <Canvas ref={canvasRef} height={720} maxWidth={1280} />
       {/* <canvas ref={canvasRef} /> */}
     </div>
   );
@@ -319,7 +319,7 @@ const getInterpolatedArray = (firstColor, secondColor, noOfSteps) => {
 };
 
 Viz.propTypes = {
-  audioRef: PropTypes.object,
+  audioRef: PropTypes.object.isRequired,
   circleProps: PropTypes.shape({
     circleWidth: PropTypes.number,
     circleColor: PropTypes.string,
