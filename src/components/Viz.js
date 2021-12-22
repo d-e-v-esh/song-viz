@@ -1,11 +1,4 @@
-import React, {
-  useState,
-  useRef,
-  useEffect,
-  createRef,
-  useCallback,
-} from "react";
-import { Canvas } from "./Canvas";
+import React, { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 
 /*
@@ -32,6 +25,8 @@ const Viz = ({
   barWidth = 5,
   centerColor = "white",
   canvasBackground = "black",
+  canvasWidth = 1000,
+  canvasHeight = 1000,
 }) => {
   const [audio, setAudio] = useState();
   const [audioContext, setAudioContext] = useState();
@@ -44,9 +39,9 @@ const Viz = ({
   const dataArray = useRef();
 
   useEffect(() => {
-    canvasRef.current.width = 1000;
+    canvasRef.current.width = canvasWidth;
 
-    canvasRef.current.height = 1000;
+    canvasRef.current.height = canvasHeight;
 
     setCanvasContext(canvasRef.current.getContext("2d"));
     console.log("1");
@@ -122,30 +117,12 @@ const Viz = ({
     }
   }, [barColor]);
 
-  // if (Object.keys(barColor).length === 1 && barColor.colorOne) {
-  // } else if (Object.keys(barColor).length === 1 && barColor.colorTwo) {
-  //   currentInterpolationArray = getInterpolatedArray(
-  //     barColor.colorTwo,
-  //     barColor.colorTwo,
-  //     256
-  //   );
-  // } else if (Object.keys(barColor).length === 2) {
-  //   currentInterpolationArray = getInterpolatedArray(
-  //     barColor.colorOne,
-  //     barColor.colorTwo,
-  //     256
-  //   );
-  // }
-
   const drawSpectrum = () => {
     //
     var drawVisual = requestAnimationFrame(drawSpectrum);
 
     audioAnalyser.current.getByteFrequencyData(dataArray.current);
 
-    // canvasRef.current.width = 1000;
-
-    // canvasRef.current.height = 1000;
     canvasContext.fillStyle = canvasBackground;
     canvasContext.fillRect(
       0,
@@ -246,20 +223,14 @@ const Viz = ({
         canvasRef.current.height / 2 +
         Math.sin(radians * i) * (radius + barHeight);
 
-      // const color = `hsl(${i}, 100%,  50%)`;
-      // /
       let color;
 
       if (hslColor) {
         color = `hsl(${hslColor[0] * i}, ${hslColor[1]}%, ${hslColor[2]}%)`;
-        // console.log(color);
       } else {
-        // console.log(color);
-
         color = currentInterpolationArray[dataArray.current[i]];
       }
 
-      // color = currentInterpolationArray[dataArray.current[i]];
       canvasContext.strokeStyle = color;
       canvasContext.lineWidth = barWidth;
       canvasContext.beginPath();
@@ -273,7 +244,6 @@ const Viz = ({
 
   return (
     <div>
-      {/* <Canvas ref={canvasRef} height={720} maxWidth={1280} /> */}
       <canvas ref={canvasRef} />
     </div>
   );
@@ -348,6 +318,8 @@ Viz.propTypes = {
   barWidth: PropTypes.number,
   centerColor: PropTypes.string,
   canvasBackground: PropTypes.string,
+  canvasWidth: PropTypes.number,
+  canvasHeight: PropTypes.number,
 };
 
 export default Viz;
