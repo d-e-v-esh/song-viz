@@ -1,17 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 
-/*
-  Currently the problems that are available is that we are getting maximum depth exceeded because of the useEffect hooks in case the default values are being used
-
-  canvasRef.current is null on Render after a refresh.
-*/
-
 var currentInterpolationArray;
 
 const Viz = ({
   audioRef,
-  circleProps = { circleWidth: 12, circleColor: "black" },
+  circleProps = { circleWidth: 12, circleColor: "green" },
   centerImageSrc,
   barColor = { hslColor: [2, 100, 50] },
   radius = 200,
@@ -44,7 +38,6 @@ const Viz = ({
     canvasRef.current.height = canvasHeight;
 
     setCanvasContext(canvasRef.current.getContext("2d"));
-    console.log("1");
 
     setAudio(audioRef.current);
     setAudioContext(new AudioContext());
@@ -55,7 +48,6 @@ const Viz = ({
       audioSource.connect(audioAnalyser.current);
       audioAnalyser.current.connect(audioContext.destination);
 
-      console.log("2");
       drawSpectrum();
     }
   }, [audioSource]);
@@ -71,7 +63,6 @@ const Viz = ({
       );
     }
     //
-    console.log(typeof audio);
   }, [audioContext]);
 
   // Loading Image Component
