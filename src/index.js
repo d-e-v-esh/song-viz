@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 
 var currentInterpolationArray
 
-export const Viz = ({
+export const RecordDisk = ({
   audioRef,
   circleProps = { circleWidth: 12, circleColor: 'green' },
   centerImageSrc,
