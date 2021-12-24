@@ -1,25 +1,24 @@
 import React, { useState, useRef, useEffect } from 'react'
 import PropTypes from 'prop-types'
 
-var currentInterpolationArray
+var currentInterpolationArray, radius
 
 export const RecordDisk = ({
   audioRef,
-  circleProps = { circleWidth: 12, circleColor: 'green' },
   centerImageSrc,
-  barColor = { hslColor: [2, 100, 50] },
-  radius = 200,
   rotation = true,
+  bounceMultiplier = 1,
+  bars = 200,
+  barWidth = 4,
   barHeightMultiplier = 1,
-  baseRadiusValue = 200,
-  bounceMultiplier = 0.5,
+  barColor,
+  circleProps = { circleWidth: 4, circleColor: 'black' },
+  centerColor = 'white',
+  canvasBackground = 'white',
+  baseRadiusValue = 150,
   fftSizeValue = 512,
   smoothingTimeConstant = 0.8,
-  bars = 250,
-  barWidth = 5,
-  centerColor = 'white',
-  canvasBackground = 'black',
-  canvasWidth = 1000,
+  canvasWidth = 1200,
   canvasHeight = 1000
 }) => {
   const [audio, setAudio] = useState()
@@ -40,7 +39,12 @@ export const RecordDisk = ({
     setCanvasContext(canvasRef.current.getContext('2d'))
 
     setAudio(audioRef.current)
-    setAudioContext(new AudioContext())
+    setAudioContext(
+      new AudioContext() ||
+        window.webkitAudioContext ||
+        window.mozAudioContext ||
+        window.msAudioContext
+    )
   }, [])
 
   useEffect(() => {
@@ -70,41 +74,43 @@ export const RecordDisk = ({
   centerImage.src = centerImageSrc
 
   useEffect(() => {
-    switch (Object.keys(barColor).length) {
-      case 1:
-        if (barColor.colorOne) {
+    if (barColor) {
+      switch (Object.keys(barColor).length) {
+        case 1:
+          if (barColor.hslColor) {
+            setHslColor(barColor.hslColor)
+          } else if (barColor.colorOne) {
+            currentInterpolationArray = getInterpolatedArray(
+              barColor.colorOne,
+              barColor.colorOne,
+              256
+            )
+          } else if (barColor.colorTwo) {
+            currentInterpolationArray = getInterpolatedArray(
+              barColor.colorTwo,
+              barColor.colorTwo,
+              256
+            )
+          }
+          break
+        case 2:
+          if (barColor.colorOne && barColor.colorTwo) {
+            currentInterpolationArray = getInterpolatedArray(
+              barColor.colorOne,
+              barColor.colorTwo,
+              256
+            )
+          }
+          break
+        default:
           currentInterpolationArray = getInterpolatedArray(
-            barColor.colorOne,
-            barColor.colorOne,
+            'rgb(0,0,0)',
+            'rgb(255,255,255)',
             256
           )
-        }
-        if (barColor.colorTwo) {
-          currentInterpolationArray = getInterpolatedArray(
-            barColor.colorTwo,
-            barColor.colorTwo,
-            256
-          )
-        }
-        if (barColor.hslColor) {
-          setHslColor(barColor.hslColor)
-        }
-        break
-      case 2:
-        if (barColor.colorOne && barColor.colorTwo) {
-          currentInterpolationArray = getInterpolatedArray(
-            barColor.colorOne,
-            barColor.colorTwo,
-            256
-          )
-        }
-        break
-      default:
-        currentInterpolationArray = getInterpolatedArray(
-          'rgb(0,0,0)',
-          'rgb(255,255,255)',
-          256
-        )
+      }
+    } else {
+      barColor = { hslColor: [2, 100, 50] }
     }
   }, [barColor])
 
