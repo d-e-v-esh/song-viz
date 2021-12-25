@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react'
 import PropTypes from 'prop-types'
 
-var currentInterpolationArray, radius
+var currentInterpolationArray, radius, hslColor
 
 export const RecordDisk = ({
   audioRef,
@@ -25,7 +25,7 @@ export const RecordDisk = ({
   const [audioContext, setAudioContext] = useState()
   const [audioSource, setAudioSource] = useState()
   const [canvasContext, setCanvasContext] = useState()
-  const [hslColor, setHslColor] = useState()
+  // const [hslColor, setHslColor] = useState()
 
   const canvasRef = useRef(null)
   const audioAnalyser = useRef()
@@ -40,6 +40,7 @@ export const RecordDisk = ({
 
     setAudio(audioRef.current)
     setAudioContext(
+      // eslint-disable-next-line no-undef
       new AudioContext() ||
         window.webkitAudioContext ||
         window.mozAudioContext ||
@@ -75,42 +76,35 @@ export const RecordDisk = ({
 
   useEffect(() => {
     if (barColor) {
-      switch (Object.keys(barColor).length) {
-        case 1:
-          if (barColor.hslColor) {
-            setHslColor(barColor.hslColor)
-          } else if (barColor.colorOne) {
-            currentInterpolationArray = getInterpolatedArray(
-              barColor.colorOne,
-              barColor.colorOne,
-              256
-            )
-          } else if (barColor.colorTwo) {
-            currentInterpolationArray = getInterpolatedArray(
-              barColor.colorTwo,
-              barColor.colorTwo,
-              256
-            )
-          }
-          break
-        case 2:
-          if (barColor.colorOne && barColor.colorTwo) {
-            currentInterpolationArray = getInterpolatedArray(
-              barColor.colorOne,
-              barColor.colorTwo,
-              256
-            )
-          }
-          break
-        default:
+      if (Object.keys(barColor).length === 2) {
+        if (barColor.colorOne && barColor.colorTwo) {
           currentInterpolationArray = getInterpolatedArray(
-            'rgb(0,0,0)',
-            'rgb(255,255,255)',
+            barColor.colorOne,
+            barColor.colorTwo,
             256
           )
+        }
+      } else if (Object.keys(barColor).length === 1) {
+        if (barColor.hslColor) {
+          hslColor = barColor.hslColor
+        } else if (barColor.colorOne) {
+          currentInterpolationArray = getInterpolatedArray(
+            barColor.colorOne,
+            barColor.colorOne,
+            256
+          )
+        } else if (barColor.colorTwo) {
+          currentInterpolationArray = getInterpolatedArray(
+            barColor.colorTwo,
+            barColor.colorTwo,
+            256
+          )
+        } else {
+          hslColor = [2, 100, 50]
+        }
       }
     } else {
-      barColor = { hslColor: [2, 100, 50] }
+      hslColor = [2, 100, 50]
     }
   }, [barColor])
 
@@ -206,33 +200,34 @@ export const RecordDisk = ({
     }
 
     for (var i = 0; i < bars; i++) {
-      let radians = (Math.PI * 2) / bars
+      const radians = (Math.PI * 2) / bars
       // this defines the height of the bar
-      let barHeight = dataArray.current[i] * barHeightMultiplier
+      const barHeight = dataArray.current[i] * barHeightMultiplier
 
       // x and y are coordinates of where the end point of a bar any second should be
-      let x = canvasRef.current.width / 2 + Math.cos(radians * i) * radius
-      let y = canvasRef.current.height / 2 + Math.sin(radians * i) * radius
-      let x_end =
+      const x = canvasRef.current.width / 2 + Math.cos(radians * i) * radius
+      const y = canvasRef.current.height / 2 + Math.sin(radians * i) * radius
+      const xEnd =
         canvasRef.current.width / 2 +
         Math.cos(radians * i) * (radius + barHeight)
-      let y_end =
+      const yEnd =
         canvasRef.current.height / 2 +
         Math.sin(radians * i) * (radius + barHeight)
 
       let color
 
+      if (currentInterpolationArray) {
+        color = currentInterpolationArray[dataArray.current[i]]
+      }
       if (hslColor) {
         color = `hsl(${hslColor[0] * i}, ${hslColor[1]}%, ${hslColor[2]}%)`
-      } else {
-        color = currentInterpolationArray[dataArray.current[i]]
       }
 
       canvasContext.strokeStyle = color
       canvasContext.lineWidth = barWidth
       canvasContext.beginPath()
       canvasContext.moveTo(x, y)
-      canvasContext.lineTo(x_end, y_end)
+      canvasContext.lineTo(xEnd, yEnd)
       canvasContext.stroke()
     }
 
@@ -275,8 +270,8 @@ const getInterpolatedArray = (firstColor, secondColor, noOfSteps) => {
 
   // function to interpolate between two colors completely, returning an array
   const interpolateColors = (color1, color2, steps) => {
-    var stepFactor = 1 / (steps - 1),
-      interpolatedColorArray = []
+    var stepFactor = 1 / (steps - 1)
+    var interpolatedColorArray = []
     color1 = color1.match(/\d+/g).map(Number)
     color2 = color2.match(/\d+/g).map(Number)
 
