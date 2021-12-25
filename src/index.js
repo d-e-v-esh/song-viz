@@ -67,7 +67,13 @@ export const RecordDisk = ({
         audioAnalyser.current.frequencyBinCount
       )
     }
-    //
+
+    // Resumes audioContext after user gesture
+    if (audio) {
+      audio.addEventListener('play', () => {
+        audioContext.resume()
+      })
+    }
   }, [audioContext])
 
   // Loading Image Component
