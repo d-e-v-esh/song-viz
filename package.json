@@ -1,6 +1,6 @@
 {
   "name": "song-viz",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "React Song Visualizer",
   "author": "d-e-v-esh",
   "license": "MIT",
@@ -49,5 +49,17 @@
   },
   "files": [
     "dist"
+  ],
+  "keywords": [
+    "visualizer",
+    "visualize",
+    "react",
+    "music",
+    "audio",
+    "player",
+    "song",
+    "visualise",
+    "viz",
+    "visualiser"
   ]
 }

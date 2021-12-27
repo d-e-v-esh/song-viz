@@ -62,7 +62,7 @@ const App = () => {
         barWidth={4}
         barHeightMultiplier={1}
         barColor={{
-          // Either add two colors
+          // Either add one/two colors
           colorTwo: 'rgba(255,97,45,255)',
           colorOne: 'rgba(253,235,184,255)',
 
