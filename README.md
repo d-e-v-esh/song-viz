@@ -2,6 +2,12 @@
 
 > React Song Visualizer
 
+
+
+https://user-images.githubusercontent.com/59534570/147430697-01fb9d2d-e58d-41a7-aa19-73458cbfa4ae.mp4
+
+
+
 [![NPM](https://img.shields.io/npm/v/song-viz.svg)](https://www.npmjs.com/package/song-viz) [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 
 ## Install
