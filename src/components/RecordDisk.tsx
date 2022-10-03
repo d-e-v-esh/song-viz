@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 
-var currentInterpolationArray, radius: Number, hslColor: number[];
+var currentInterpolationArray, radius: number, hslColor: number[];
 
 export const RecordDisk = ({
   audioRef,
@@ -37,7 +37,9 @@ export const RecordDisk = ({
 
     canvasRef.current!.height = canvasHeight;
 
-    setCanvasContext(canvasRef.current!.getContext("2d"));
+    setCanvasContext(
+      canvasRef.current!.getContext("2d") as CanvasRenderingContext2D
+    );
 
     setAudio(audioRef.current);
     setAudioContext(
@@ -51,8 +53,8 @@ export const RecordDisk = ({
 
   useEffect(() => {
     if (audioSource) {
-      audioSource.connect(audioAnalyser.current);
-      audioAnalyser.current!.connect(audioContext.destination);
+      audioSource.connect(audioAnalyser!.current as AudioNode);
+      audioAnalyser.current!.connect(audioContext!.destination);
 
       drawSpectrum();
     }
@@ -60,7 +62,9 @@ export const RecordDisk = ({
 
   useEffect(() => {
     if (audioContext) {
-      setAudioSource(audioContext.createMediaElementSource(audio));
+      setAudioSource(
+        audioContext.createMediaElementSource(audio as HTMLAudioElement)
+      );
       audioAnalyser.current = audioContext.createAnalyser();
       audioAnalyser.current!.fftSize = fftSizeValue;
       audioAnalyser.current!.smoothingTimeConstant = smoothingTimeConstant;
@@ -70,7 +74,7 @@ export const RecordDisk = ({
     }
 
     // Resumes audioContext after user gesture
-    if (audio) {
+    if (audio && audioContext) {
       audio.addEventListener("play", () => {
         audioContext.resume();
       });
@@ -119,7 +123,9 @@ export const RecordDisk = ({
     //
     var drawVisual = requestAnimationFrame(drawSpectrum);
 
-    audioAnalyser.current!.getByteFrequencyData(dataArray.current);
+    audioAnalyser.current!.getByteFrequencyData(
+      dataArray.current as Uint8Array
+    );
 
     canvasContext!.fillStyle = canvasBackground;
     canvasContext!.fillRect(
@@ -183,7 +189,7 @@ export const RecordDisk = ({
               canvasRef.current!.width / 2,
               canvasRef.current!.height / 2
             );
-            canvasContext.rotate(audio.currentTime / 1);
+            canvasContext.rotate(audio!.currentTime / 1);
             canvasContext.drawImage(
               centerImage,
               -radius,
@@ -214,13 +220,13 @@ export const RecordDisk = ({
       const barHeight = dataArray.current[i] * barHeightMultiplier;
 
       // x and y are coordinates of where the end point of a bar any second should be
-      const x = canvasRef.current.width / 2 + Math.cos(radians * i) * radius;
-      const y = canvasRef.current.height / 2 + Math.sin(radians * i) * radius;
+      const x = canvasRef.current!.width / 2 + Math.cos(radians * i) * radius;
+      const y = canvasRef.current!.height / 2 + Math.sin(radians * i) * radius;
       const xEnd =
-        canvasRef.current.width / 2 +
+        canvasRef.current!.width / 2 +
         Math.cos(radians * i) * (radius + barHeight);
       const yEnd =
-        canvasRef.current.height / 2 +
+        canvasRef.current!.height / 2 +
         Math.sin(radians * i) * (radius + barHeight);
 
       let color;
@@ -232,12 +238,14 @@ export const RecordDisk = ({
         color = `hsl(${hslColor[0] * i}, ${hslColor[1]}%, ${hslColor[2]}%)`;
       }
 
-      canvasContext.strokeStyle = color;
-      canvasContext.lineWidth = barWidth;
-      canvasContext.beginPath();
-      canvasContext.moveTo(x, y);
-      canvasContext.lineTo(xEnd, yEnd);
-      canvasContext.stroke();
+      if (canvasContext) {
+        canvasContext.strokeStyle = color;
+        canvasContext.lineWidth = barWidth;
+        canvasContext.beginPath();
+        canvasContext.moveTo(x, y);
+        canvasContext.lineTo(xEnd, yEnd);
+        canvasContext.stroke();
+      }
     }
 
     imageComponent(canvasRef.current);
