@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 
-var currentInterpolationArray, radius, hslColor;
+var currentInterpolationArray, radius: Number, hslColor: number[];
 
 export const RecordDisk = ({
   audioRef,
@@ -21,10 +21,10 @@ export const RecordDisk = ({
   canvasWidth = 1200,
   canvasHeight = 1000,
 }) => {
-  const [audio, setAudio] = useState();
-  const [audioContext, setAudioContext] = useState();
+  const [audio, setAudio] = useState<HTMLAudioElement>();
+  const [audioContext, setAudioContext] = useState<BaseAudioContext>();
   const [audioSource, setAudioSource] = useState();
-  const [canvasContext, setCanvasContext] = useState();
+  const [canvasContext, setCanvasContext] = useState<HTMLCanvasElement>();
   // const [hslColor, setHslColor] = useState()
 
   const canvasRef = useRef(null);
@@ -32,11 +32,11 @@ export const RecordDisk = ({
   const dataArray = useRef();
 
   useEffect(() => {
-    canvasRef.current.width = canvasWidth;
+    canvasRef.current!.width = canvasWidth;
 
-    canvasRef.current.height = canvasHeight;
+    canvasRef.current!.height = canvasHeight;
 
-    setCanvasContext(canvasRef.current.getContext("2d"));
+    setCanvasContext(canvasRef.current!.getContext("2d"));
 
     setAudio(audioRef.current);
     setAudioContext(
@@ -51,7 +51,7 @@ export const RecordDisk = ({
   useEffect(() => {
     if (audioSource) {
       audioSource.connect(audioAnalyser.current);
-      audioAnalyser.current.connect(audioContext.destination);
+      audioAnalyser.current!.connect(audioContext.destination);
 
       drawSpectrum();
     }
@@ -61,10 +61,10 @@ export const RecordDisk = ({
     if (audioContext) {
       setAudioSource(audioContext.createMediaElementSource(audio));
       audioAnalyser.current = audioContext.createAnalyser();
-      audioAnalyser.current.fftSize = fftSizeValue;
-      audioAnalyser.current.smoothingTimeConstant = smoothingTimeConstant;
+      audioAnalyser.current!.fftSize = fftSizeValue;
+      audioAnalyser.current!.smoothingTimeConstant = smoothingTimeConstant;
       dataArray.current = new Uint8Array(
-        audioAnalyser.current.frequencyBinCount
+        audioAnalyser.current!.frequencyBinCount
       );
     }
 
@@ -118,14 +118,14 @@ export const RecordDisk = ({
     //
     var drawVisual = requestAnimationFrame(drawSpectrum);
 
-    audioAnalyser.current.getByteFrequencyData(dataArray.current);
+    audioAnalyser.current!.getByteFrequencyData(dataArray.current);
 
     canvasContext.fillStyle = canvasBackground;
     canvasContext.fillRect(
       0,
       0,
-      canvasRef.current.width,
-      canvasRef.current.height
+      canvasRef.current!.width,
+      canvasRef.current!.height
     );
 
     // Handling Bounce
@@ -146,8 +146,8 @@ export const RecordDisk = ({
       canvasContext.save();
       canvasContext.beginPath();
       canvasContext.arc(
-        canvasRef.current.width / 2,
-        canvasRef.current.height / 2,
+        canvasRef.current!.width / 2,
+        canvasRef.current!.height / 2,
         radius,
         0,
         2 * Math.PI
@@ -178,8 +178,8 @@ export const RecordDisk = ({
             0,
             0,
             1,
-            canvasRef.current.width / 2,
-            canvasRef.current.height / 2
+            canvasRef.current!.width / 2,
+            canvasRef.current!.height / 2
           );
           canvasContext.rotate(audio.currentTime / 1);
           canvasContext.drawImage(
