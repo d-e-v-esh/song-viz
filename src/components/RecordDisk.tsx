@@ -22,14 +22,15 @@ export const RecordDisk = ({
   canvasHeight = 1000,
 }) => {
   const [audio, setAudio] = useState<HTMLAudioElement>();
-  const [audioContext, setAudioContext] = useState<BaseAudioContext>();
-  const [audioSource, setAudioSource] = useState();
-  const [canvasContext, setCanvasContext] = useState<HTMLCanvasElement>();
+  const [audioContext, setAudioContext] = useState<AudioContext>();
+  const [audioSource, setAudioSource] = useState<MediaElementAudioSourceNode>();
+  const [canvasContext, setCanvasContext] =
+    useState<CanvasRenderingContext2D>();
   // const [hslColor, setHslColor] = useState()
 
-  const canvasRef = useRef(null);
-  const audioAnalyser = useRef();
-  const dataArray = useRef();
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const audioAnalyser = useRef<AnalyserNode>();
+  const dataArray = useRef<Uint8Array>();
 
   useEffect(() => {
     canvasRef.current!.width = canvasWidth;
@@ -120,8 +121,8 @@ export const RecordDisk = ({
 
     audioAnalyser.current!.getByteFrequencyData(dataArray.current);
 
-    canvasContext.fillStyle = canvasBackground;
-    canvasContext.fillRect(
+    canvasContext!.fillStyle = canvasBackground;
+    canvasContext!.fillRect(
       0,
       0,
       canvasRef.current!.width,
@@ -143,66 +144,68 @@ export const RecordDisk = ({
     radius = baseRadius;
 
     const imageComponent = () => {
-      canvasContext.save();
-      canvasContext.beginPath();
-      canvasContext.arc(
-        canvasRef.current!.width / 2,
-        canvasRef.current!.height / 2,
-        radius,
-        0,
-        2 * Math.PI
-      );
+      if (canvasContext) {
+        canvasContext.save();
+        canvasContext.beginPath();
+        canvasContext.arc(
+          canvasRef.current!.width / 2,
+          canvasRef.current!.height / 2,
+          radius,
+          0,
+          2 * Math.PI
+        );
 
-      if (circleProps === false || circleProps === undefined) {
-        canvasContext.strokeStyle = "white"; // color of the circle
-        canvasContext.lineWidth = 1;
-      } else if (circleProps) {
-        canvasContext.lineWidth = circleProps.circleWidth;
-        canvasContext.strokeStyle = circleProps.circleColor; // color of the circle
-      }
-
-      canvasContext.stroke();
-      canvasContext.clip();
-
-      if (centerImageSrc === undefined) {
-        // If image is not provided then the center circle will be filled up with one Color
-        canvasContext.fillStyle = centerColor;
-        canvasContext.fill();
-        canvasContext.stroke();
-      }
-
-      if (centerImageSrc) {
-        if (rotation) {
-          canvasContext.setTransform(
-            1,
-            0,
-            0,
-            1,
-            canvasRef.current!.width / 2,
-            canvasRef.current!.height / 2
-          );
-          canvasContext.rotate(audio.currentTime / 1);
-          canvasContext.drawImage(
-            centerImage,
-            -radius,
-            -radius,
-            radius * 2,
-            radius * 2
-          );
-
-          canvasContext.setTransform(1, 0, 0, 1, 0, 0);
-        } else {
-          canvasContext.drawImage(
-            centerImage,
-
-            canvasRef.current.width / 2 - radius,
-            canvasRef.current.height / 2 - radius,
-            radius * 2, // These two tell the size of the image when we place it in the above coordinate
-            radius * 2
-          );
+        if (circleProps === false || circleProps === undefined) {
+          canvasContext.strokeStyle = "white"; // color of the circle
+          canvasContext.lineWidth = 1;
+        } else if (circleProps) {
+          canvasContext.lineWidth = circleProps.circleWidth;
+          canvasContext.strokeStyle = circleProps.circleColor; // color of the circle
         }
+
+        canvasContext.stroke();
+        canvasContext.clip();
+
+        if (centerImageSrc === undefined) {
+          // If image is not provided then the center circle will be filled up with one Color
+          canvasContext.fillStyle = centerColor;
+          canvasContext.fill();
+          canvasContext.stroke();
+        }
+
+        if (centerImageSrc) {
+          if (rotation) {
+            canvasContext.setTransform(
+              1,
+              0,
+              0,
+              1,
+              canvasRef.current!.width / 2,
+              canvasRef.current!.height / 2
+            );
+            canvasContext.rotate(audio.currentTime / 1);
+            canvasContext.drawImage(
+              centerImage,
+              -radius,
+              -radius,
+              radius * 2,
+              radius * 2
+            );
+
+            canvasContext.setTransform(1, 0, 0, 1, 0, 0);
+          } else {
+            canvasContext.drawImage(
+              centerImage,
+
+              canvasRef.current!.width / 2 - radius,
+              canvasRef.current!.height / 2 - radius,
+              radius * 2, // These two tell the size of the image when we place it in the above coordinate
+              radius * 2
+            );
+          }
+        }
+        canvasContext.restore();
       }
-      canvasContext.restore();
     };
 
     for (var i = 0; i < bars; i++) {
