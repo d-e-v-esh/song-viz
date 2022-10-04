@@ -13,13 +13,11 @@ const App = () => {
       <RecordDisk
         audioRef={audioRef}
         centerImageSrc={songCover}
-        // barColor={
-        //   {
-        //     // colorTwo: 'rgba(25,97,4,255)',
-        //     // colorOne: 'rgba(253,235,184,255)'
-        //     // hslColor: [20, 100, 50]
-        //   }
-        // }
+        barColor={{
+          colorTwo: "rgba(25,97,4,255)",
+          colorOne: "rgba(253,235,184,255)",
+          // hslColor: [20, 100, 50]
+        }}
       />
 
       <audio src={songFile} controls ref={audioRef} />

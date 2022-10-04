@@ -1,7 +1,12 @@
 import React, { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
+import { rms } from "../utils/rms";
+import { getInterpolatedArray } from "../utils/getInterpolatedArray ";
 
-var currentInterpolationArray, radius: number, hslColor: number[];
+var currentInterpolationArray: string[],
+  radius: number,
+  hslColor: number[],
+  baseRadius: number;
 
 export const RecordDisk = ({
   audioRef,
@@ -42,13 +47,7 @@ export const RecordDisk = ({
     );
 
     setAudio(audioRef.current);
-    setAudioContext(
-      // eslint-disable-next-line no-undef
-      new AudioContext() ||
-        window.webkitAudioContext ||
-        window.mozAudioContext ||
-        window.msAudioContext
-    );
+    setAudioContext(new AudioContext());
   }, []);
 
   useEffect(() => {
@@ -137,13 +136,13 @@ export const RecordDisk = ({
 
     // Handling Bounce
     if (bounceMultiplier) {
-      const currentRMS = rms(dataArray.current);
+      const currentRMS = rms(dataArray.current as Uint8Array);
       const workingRMS = Math.max(
         baseRadiusValue,
         baseRadiusValue + currentRMS * bounceMultiplier
       );
 
-      var baseRadius = workingRMS;
+      baseRadius = workingRMS;
     } else if (!bounceMultiplier) {
       baseRadius = baseRadiusValue;
     }
@@ -161,7 +160,7 @@ export const RecordDisk = ({
           2 * Math.PI
         );
 
-        if (circleProps === false || circleProps === undefined) {
+        if (circleProps === undefined) {
           canvasContext.strokeStyle = "white"; // color of the circle
           canvasContext.lineWidth = 1;
         } else if (circleProps) {
@@ -256,49 +255,4 @@ export const RecordDisk = ({
       <canvas ref={canvasRef} />
     </div>
   );
-};
-
-const rms = (args) => {
-  var rms = 0;
-  for (var i = 0; i < args.length; i++) {
-    rms += Math.pow(args[i], 2);
-  }
-
-  rms = rms / args.length;
-  rms = Math.sqrt(rms);
-
-  return rms;
-};
-
-const getInterpolatedArray = (firstColor, secondColor, noOfSteps) => {
-  // Returns a single rgb color interpolation between given rgb color
-  function interpolateColor(color1, color2, factor) {
-    // if we don't pass in factor then set default value
-    if (arguments.length < 3) {
-      factor = 0.5;
-    }
-    var result = color1.slice();
-    for (var i = 0; i < 3; i++) {
-      result[i] = Math.round(result[i] + factor * (color2[i] - color1[i]));
-      var resultRGB = `rgb(${result[0]}, ${result[1]}, ${result[2]})`;
-    }
-    return resultRGB;
-  }
-
-  // function to interpolate between two colors completely, returning an array
-  const interpolateColors = (color1, color2, steps) => {
-    var stepFactor = 1 / (steps - 1);
-    var interpolatedColorArray = [];
-    color1 = color1.match(/\d+/g).map(Number);
-    color2 = color2.match(/\d+/g).map(Number);
-
-    for (var i = 0; i < steps; i++) {
-      interpolatedColorArray.push(
-        interpolateColor(color1, color2, stepFactor * i)
-      );
-    }
-    return interpolatedColorArray;
-  };
-
-  return interpolateColors(firstColor, secondColor, noOfSteps);
 };
