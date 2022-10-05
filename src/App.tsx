@@ -18,6 +18,8 @@ const App = () => {
           colorOne: "rgba(253,235,184,255)",
           // hslColor: [20, 100, 50]
         }}
+        canvasWidth={1920}
+        canvasHeight={1080}
       />
 
       <audio src={songFile} controls ref={audioRef} />
