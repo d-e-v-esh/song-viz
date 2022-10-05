@@ -1,7 +1,7 @@
 export const getInterpolatedArray = (
   firstColor: string,
   secondColor: string,
-  noOfSteps: number
+  numberOfSteps: number
 ) => {
   // Returns a single rgb color interpolation between given rgb color
   function interpolateColor(
@@ -16,7 +16,6 @@ export const getInterpolatedArray = (
       factor = 0.5;
     }
     var result = color1.slice();
-    console.log({ result });
     for (var i = 0; i < 3; i++) {
       result[i] = Math.round(result[i] + factor * (color2[i] - color1[i]));
       resultRGB = `rgb(${result[0]}, ${result[1]}, ${result[2]})`;
@@ -43,5 +42,5 @@ export const getInterpolatedArray = (
     return interpolatedColorArray;
   };
 
-  return interpolateColors(firstColor, secondColor, noOfSteps);
+  return interpolateColors(firstColor, secondColor, numberOfSteps);
 };

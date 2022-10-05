@@ -1,4 +1,4 @@
-import { RecordDisk } from "./components/RecordDisk";
+import { MeloDisc } from "./components/MeloDisc";
 import React, { useRef } from "react";
 import songFile from "./IZECOLD - Close (feat. Molly Ann) [NCS Release].mp3";
 import songCover from "./img/close brooks remix cover.jpg";
@@ -10,9 +10,9 @@ const App = () => {
   const audioRef = useRef();
   return (
     <div>
-      <RecordDisk
+      <MeloDisc
         audioRef={audioRef}
-        centerImageSrc={songCover}
+        // centerImageSrc={songCover}
         barColor={{
           colorTwo: "rgba(25,97,4,255)",
           colorOne: "rgba(253,235,184,255)",
