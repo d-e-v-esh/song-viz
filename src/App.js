@@ -1,37 +1,39 @@
-import React, {useState} from "react";
-// import NewSpaceForce from "./components/SpaceForceNew";
-import BarsCirc from './components/Bars'
-import songFile from "./audio/water.wav"; import kshmr from "./img/kshmrOneMoreRound.jpg";
+import React, { useRef } from "react";
+import songFile from "./water.wav";
+import kshmr from "./img/kshmrOneMoreRound.jpg";
+import Viz from "./components/Viz";
+
 function App() {
-  const [isAudioPlaying, setIsAudioPlaying] = useState(false)
-  const audio = new Audio(songFile); // Loading audio file
-  const majorToggle = () => {
-
-    if(audio.paused){
-      audio.play()
-    }else{
-      audio.pause()
-    }
-
-    // console.log(isAudioPlaying)
-  }
-
+  const audioRef = useRef();
 
   return (
     <div>
-      <BarsCirc
-        bars={600} // done
-        barColor={"lightpink"} //  done
-        baseRadiusValue={100} //  done
-        barDimensions={[3, 0.8]}
-        bounceMultiplier={1}
-        centerImageSrc={kshmr} //  done
-        circProperties={[12, "black"]}
-        isAudioPlaying={isAudioPlaying}
-        audioSrc={songFile}
-        audio={audio}
+      <Viz
+        canvasWidth={1000}
+        canvasHeight={1000}
+        audioRef={audioRef}
+        centerImageSrc={kshmr}
+        circleProps={{ circleWidth: 12, circleColor: "black" }}
+        barColor={{
+          // colorTwo: "rgba(255,97,45,255)",
+          // colorOne: "rgba(253,235,184,255)",
+
+          hslColor: [2, 100, 50],
+        }}
+        radius={200}
+        rotation={true}
+        baseRadiusValue={100}
+        bounceMultiplier={0.5}
+        fftSizeValue={2048}
+        smoothingTimeConstant={0.8}
+        bars={200}
+        barWidth={4}
+        barHeightMultiplier={1}
+        centerColor="red"
+        canvasBackground="white"
       />
-      <button onClick={majorToggle}>Toggle</button>
+
+      <audio src={songFile} controls ref={audioRef} />
     </div>
   );
 }
