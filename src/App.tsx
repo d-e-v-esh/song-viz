@@ -5,6 +5,8 @@ import songCover from "./img/close brooks remix cover.jpg";
 
 // Passing Empty barColor works but not passing it does not work.
 // Not passing any barColor should set the barColor to RGB hsl value.
+// !! Go to this Page and Read
+// !! https://vitejs.dev/guide/build.html#library-mode
 
 const App = () => {
   const audioRef = useRef();
