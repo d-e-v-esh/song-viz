@@ -1,10 +1,10 @@
 {
   "name": "song-viz",
-  "version": "1.0.0",
-  "description": "Audio Visualizer for React",
+  "version": "1.0.5",
+  "description": "React Song Visualizer",
   "author": "d-e-v-esh",
   "license": "MIT",
-  "repository": "d-e-v-esh/audio-viz",
+  "repository": "d-e-v-esh/song-viz",
   "main": "dist/index.js",
   "module": "dist/index.modern.js",
   "source": "src/index.js",
@@ -49,5 +49,17 @@
   },
   "files": [
     "dist"
+  ],
+  "keywords": [
+    "visualizer",
+    "visualize",
+    "react",
+    "music",
+    "audio",
+    "player",
+    "song",
+    "visualise",
+    "viz",
+    "visualiser"
   ]
 }

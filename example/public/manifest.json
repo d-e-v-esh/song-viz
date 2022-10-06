@@ -1,6 +1,6 @@
 {
-  "short_name": "audio-viz",
-  "name": "audio-viz",
+  "short_name": "song-viz",
+  "name": "song-viz",
   "icons": [
     {
       "src": "favicon.ico",

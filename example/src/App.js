@@ -1,35 +1,25 @@
 import React, { useRef } from 'react'
-import songFile from './water.wav'
-import kshmr from './img/kshmrOneMoreRound.jpg'
-import { Viz } from 'audio-viz'
+import songFile from './IZECOLD - Close (feat. Molly Ann) [NCS Release].mp3'
+import songCover from './img/close brooks remix cover.jpg'
+import { RecordDisk } from 'song-viz'
+
+// Passing Empty barColor works but not passing it does not work.
+// Not passing any barColor should set the barColor to RGB hsl value.
 
 const App = () => {
   const audioRef = useRef()
   return (
     <div>
-      <Viz
-        canvasWidth={1000}
-        canvasHeight={1000}
+      <RecordDisk
         audioRef={audioRef}
-        centerImageSrc={kshmr}
-        circleProps={{ circleWidth: 12, circleColor: 'black' }}
-        barColor={{
-          // colorTwo: "rgba(255,97,45,255)",
-          // colorOne: "rgba(253,235,184,255)",
-
-          hslColor: [2, 100, 50]
-        }}
-        radius={200}
-        rotation={true}
-        baseRadiusValue={100}
-        bounceMultiplier={0.5}
-        fftSizeValue={2048}
-        smoothingTimeConstant={0.8}
-        bars={200}
-        barWidth={4}
-        barHeightMultiplier={1}
-        centerColor='red'
-        canvasBackground='white'
+        centerImageSrc={songCover}
+        // barColor={
+        //   {
+        //     // colorTwo: 'rgba(25,97,4,255)',
+        //     // colorOne: 'rgba(253,235,184,255)'
+        //     // hslColor: [20, 100, 50]
+        //   }
+        // }
       />
 
       <audio src={songFile} controls ref={audioRef} />

@@ -1,32 +1,31 @@
 import React, { useState, useRef, useEffect } from 'react'
 import PropTypes from 'prop-types'
 
-var currentInterpolationArray
+var currentInterpolationArray, radius, hslColor
 
 export const RecordDisk = ({
   audioRef,
-  circleProps = { circleWidth: 12, circleColor: 'green' },
   centerImageSrc,
-  barColor = { hslColor: [2, 100, 50] },
-  radius = 200,
   rotation = true,
+  bounceMultiplier = 1,
+  bars = 200,
+  barWidth = 4,
   barHeightMultiplier = 1,
-  baseRadiusValue = 200,
-  bounceMultiplier = 0.5,
+  barColor,
+  circleProps = { circleWidth: 4, circleColor: 'black' },
+  centerColor = 'white',
+  canvasBackground = 'white',
+  baseRadiusValue = 150,
   fftSizeValue = 512,
   smoothingTimeConstant = 0.8,
-  bars = 250,
-  barWidth = 5,
-  centerColor = 'white',
-  canvasBackground = 'black',
-  canvasWidth = 1000,
+  canvasWidth = 1200,
   canvasHeight = 1000
 }) => {
   const [audio, setAudio] = useState()
   const [audioContext, setAudioContext] = useState()
   const [audioSource, setAudioSource] = useState()
   const [canvasContext, setCanvasContext] = useState()
-  const [hslColor, setHslColor] = useState()
+  // const [hslColor, setHslColor] = useState()
 
   const canvasRef = useRef(null)
   const audioAnalyser = useRef()
@@ -40,7 +39,13 @@ export const RecordDisk = ({
     setCanvasContext(canvasRef.current.getContext('2d'))
 
     setAudio(audioRef.current)
-    setAudioContext(new AudioContext())
+    setAudioContext(
+      // eslint-disable-next-line no-undef
+      new AudioContext() ||
+        window.webkitAudioContext ||
+        window.mozAudioContext ||
+        window.msAudioContext
+    )
   }, [])
 
   useEffect(() => {
@@ -62,7 +67,13 @@ export const RecordDisk = ({
         audioAnalyser.current.frequencyBinCount
       )
     }
-    //
+
+    // Resumes audioContext after user gesture
+    if (audio) {
+      audio.addEventListener('play', () => {
+        audioContext.resume()
+      })
+    }
   }, [audioContext])
 
   // Loading Image Component
@@ -70,27 +81,8 @@ export const RecordDisk = ({
   centerImage.src = centerImageSrc
 
   useEffect(() => {
-    switch (Object.keys(barColor).length) {
-      case 1:
-        if (barColor.colorOne) {
-          currentInterpolationArray = getInterpolatedArray(
-            barColor.colorOne,
-            barColor.colorOne,
-            256
-          )
-        }
-        if (barColor.colorTwo) {
-          currentInterpolationArray = getInterpolatedArray(
-            barColor.colorTwo,
-            barColor.colorTwo,
-            256
-          )
-        }
-        if (barColor.hslColor) {
-          setHslColor(barColor.hslColor)
-        }
-        break
-      case 2:
+    if (barColor) {
+      if (Object.keys(barColor).length === 2) {
         if (barColor.colorOne && barColor.colorTwo) {
           currentInterpolationArray = getInterpolatedArray(
             barColor.colorOne,
@@ -98,13 +90,27 @@ export const RecordDisk = ({
             256
           )
         }
-        break
-      default:
-        currentInterpolationArray = getInterpolatedArray(
-          'rgb(0,0,0)',
-          'rgb(255,255,255)',
-          256
-        )
+      } else if (Object.keys(barColor).length === 1) {
+        if (barColor.hslColor) {
+          hslColor = barColor.hslColor
+        } else if (barColor.colorOne) {
+          currentInterpolationArray = getInterpolatedArray(
+            barColor.colorOne,
+            barColor.colorOne,
+            256
+          )
+        } else if (barColor.colorTwo) {
+          currentInterpolationArray = getInterpolatedArray(
+            barColor.colorTwo,
+            barColor.colorTwo,
+            256
+          )
+        } else {
+          hslColor = [2, 100, 50]
+        }
+      }
+    } else {
+      hslColor = [2, 100, 50]
     }
   }, [barColor])
 
@@ -200,33 +206,34 @@ export const RecordDisk = ({
     }
 
     for (var i = 0; i < bars; i++) {
-      let radians = (Math.PI * 2) / bars
+      const radians = (Math.PI * 2) / bars
       // this defines the height of the bar
-      let barHeight = dataArray.current[i] * barHeightMultiplier
+      const barHeight = dataArray.current[i] * barHeightMultiplier
 
       // x and y are coordinates of where the end point of a bar any second should be
-      let x = canvasRef.current.width / 2 + Math.cos(radians * i) * radius
-      let y = canvasRef.current.height / 2 + Math.sin(radians * i) * radius
-      let x_end =
+      const x = canvasRef.current.width / 2 + Math.cos(radians * i) * radius
+      const y = canvasRef.current.height / 2 + Math.sin(radians * i) * radius
+      const xEnd =
         canvasRef.current.width / 2 +
         Math.cos(radians * i) * (radius + barHeight)
-      let y_end =
+      const yEnd =
         canvasRef.current.height / 2 +
         Math.sin(radians * i) * (radius + barHeight)
 
       let color
 
+      if (currentInterpolationArray) {
+        color = currentInterpolationArray[dataArray.current[i]]
+      }
       if (hslColor) {
         color = `hsl(${hslColor[0] * i}, ${hslColor[1]}%, ${hslColor[2]}%)`
-      } else {
-        color = currentInterpolationArray[dataArray.current[i]]
       }
 
       canvasContext.strokeStyle = color
       canvasContext.lineWidth = barWidth
       canvasContext.beginPath()
       canvasContext.moveTo(x, y)
-      canvasContext.lineTo(x_end, y_end)
+      canvasContext.lineTo(xEnd, yEnd)
       canvasContext.stroke()
     }
 
@@ -269,8 +276,8 @@ const getInterpolatedArray = (firstColor, secondColor, noOfSteps) => {
 
   // function to interpolate between two colors completely, returning an array
   const interpolateColors = (color1, color2, steps) => {
-    var stepFactor = 1 / (steps - 1),
-      interpolatedColorArray = []
+    var stepFactor = 1 / (steps - 1)
+    var interpolatedColorArray = []
     color1 = color1.match(/\d+/g).map(Number)
     color2 = color2.match(/\d+/g).map(Number)
 
@@ -285,7 +292,7 @@ const getInterpolatedArray = (firstColor, secondColor, noOfSteps) => {
   return interpolateColors(firstColor, secondColor, noOfSteps)
 }
 
-Viz.propTypes = {
+RecordDisk.propTypes = {
   audioRef: PropTypes.object.isRequired,
   circleProps: PropTypes.shape({
     circleWidth: PropTypes.number,
