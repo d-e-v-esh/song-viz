@@ -9,7 +9,7 @@ var currentInterpolationArray: Array<string | undefined>,
   baseRadius: number;
 
 interface MeloDiscProps {
-  audioRef: React.MutableRefObject<undefined>;
+  audioRef: React.RefObject<HTMLAudioElement>;
   centerImageSrc?: string;
   rotation?: true;
   bounceMultiplier?: number;
@@ -60,7 +60,7 @@ export const MeloDisc: React.FC<MeloDiscProps> = ({
   canvasWidth = 1200,
   canvasHeight = 1000,
 }) => {
-  const [audio, setAudio] = useState<HTMLAudioElement>();
+  const [audio, setAudio] = useState<HTMLAudioElement | null>();
   const [audioContext, setAudioContext] = useState<AudioContext>();
   const [audioSource, setAudioSource] = useState<MediaElementAudioSourceNode>();
   const [canvasContext, setCanvasContext] =

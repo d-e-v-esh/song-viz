@@ -1,6 +1,6 @@
 import { MeloDisc } from "./components/MeloDisc";
 import React, { useRef } from "react";
-import songFile from "./IZECOLD - Close (feat. Molly Ann) [NCS Release].mp3";
+import songFile from "./water.wav";
 import songCover from "./img/close brooks remix cover.jpg";
 
 // Passing Empty barColor works but not passing it does not work.
@@ -9,7 +9,7 @@ import songCover from "./img/close brooks remix cover.jpg";
 // !! https://vitejs.dev/guide/build.html#library-mode
 
 const App = () => {
-  const audioRef = useRef();
+  const audioRef = useRef<HTMLAudioElement>(null);
   return (
     <div>
       <MeloDisc
