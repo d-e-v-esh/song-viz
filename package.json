@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "prepack": "json -f package.json -I -e \"delete this.devDependencies; delete this.dependencies\"",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
@@ -13,11 +14,29 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "@types/node": "^18.8.2",
+    "@types/node": "^18.8.3",
     "@types/react": "^18.0.17",
     "@types/react-dom": "^18.0.6",
     "@vitejs/plugin-react": "^2.1.0",
     "typescript": "^4.6.4",
-    "vite": "^3.1.0"
+    "vite": "^3.1.0",
+    "vite-plugin-dts": "^1.6.5"
+  },
+  "license": "UNLICENSED",
+  "peerDependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/song-viz.umd.js",
+  "module": "./dist/song-viz.es.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/song-viz.es.js",
+      "require": "./dist/song-viz.umd.js"
+    }
   }
 }
