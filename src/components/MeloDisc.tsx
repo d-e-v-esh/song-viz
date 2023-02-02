@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from "react";
-import PropTypes from "prop-types";
 import { rms } from "../utils/rms";
 import { getInterpolatedArray } from "../utils/getInterpolatedArray";
 

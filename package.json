@@ -1,42 +1,79 @@
 {
   "name": "song-viz",
-  "private": true,
-  "version": "0.0.0",
+  "version": "1.1.0",
+  "author": "Devesh",
+  "license": "MIT",
   "type": "module",
-  "prepack": "json -f package.json -I -e \"delete this.devDependencies; delete this.dependencies\"",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/d-e-v-esh/song-viz"
+  },
+  "homepage": "https://github.com/d-e-v-esh/song-viz/blob/master/README.md",
+  "source": "src/index.js",
+  "main": "./dist/index.umd.js",
+  "module": "./dist/index.es.js",
+  "types": "./dist/index.d.ts",
+  "keywords": [
+    "visualizer",
+    "visualize",
+    "react",
+    "music",
+    "audio",
+    "player",
+    "song",
+    "visualise",
+    "viz",
+    "visualiser"
+  ],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "prepare": "husky install",
     "preview": "vite preview"
   },
-  "dependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
-  },
-  "devDependencies": {
-    "@types/node": "^18.8.3",
-    "@types/react": "^18.0.17",
-    "@types/react-dom": "^18.0.6",
-    "@vitejs/plugin-react": "^2.1.0",
-    "typescript": "^4.6.4",
-    "vite": "^3.1.0",
-    "vite-plugin-dts": "^1.6.5"
-  },
-  "license": "UNLICENSED",
   "peerDependencies": {
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
-  "files": [
-    "dist"
-  ],
-  "main": "./dist/song-viz.umd.js",
-  "module": "./dist/song-viz.es.js",
-  "types": "./dist/index.d.ts",
+  "devDependencies": {
+    "@types/node": "^18.11.0",
+    "@types/react": "^18.0.17",
+    "@types/react-dom": "^18.0.6",
+    "@typescript-eslint/eslint-plugin": "^5.40.1",
+    "@typescript-eslint/parser": "^5.40.1",
+    "@vitejs/plugin-react": "^3.0.1",
+    "eslint": "^8.25.0",
+    "eslint-plugin-react": "^7.31.10",
+    "eslint-plugin-simple-import-sort": "^10.0.0",
+    "husky": "^8.0.1",
+    "prettier": "^2.7.1",
+    "typescript": "^4.6.4",
+    "vite": "^4.0.4",
+    "vite-plugin-dts": "^1.6.6",
+    "vite-plugin-linter": "^2.0.2",
+    "vite-tsconfig-paths": "^4.0.5"
+  },
+  "lint": "eslint 'src/**/*.{js,jsx,ts,tsx}'",
+  "lint:fix": "eslint --fix 'src/**/*.{jsx,ts,tsx}'",
+  "format": "prettier --write src//**/*.{ts,tsx,css} --config ./.prettierrc",
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "src/**/*.{js,jsx,ts,tsx}": [
+      "yarn  eslint",
+      "yarn  format"
+    ]
+  },
   "exports": {
     ".": {
-      "import": "./dist/song-viz.es.js",
-      "require": "./dist/song-viz.umd.js"
+      "import": "./dist/index.es.js",
+      "require": "./dist/index.umd.js"
     }
   }
 }
